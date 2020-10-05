@@ -93,7 +93,7 @@ git merge BranchToMerge <br>
 git config --global user.name "Votre nom ou pseudo" <br>
 git config --global user.email "votre@email.com" <br>
 
-<b> 2- Voir l'historique des commits dont le SHA et les descriptions (presser "q" pour sortir) <b> <br>
+<b> 2- Voir l'historique des commits dont le SHA et les descriptions (presser "q" pour sortir) </b> <br>
 git log <br>
 
 <b> 3- Pour mettre une version précédente (revenir à un vieux commit) </b> <br>
