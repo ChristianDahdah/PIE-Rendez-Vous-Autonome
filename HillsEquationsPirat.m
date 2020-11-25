@@ -4,7 +4,7 @@ syms Fx Fy Fz real
 % Chaser mass and gravitational param
 syms m mu real
 %Target parameter s
-syms r t w0 real
+syms rt w0 real
 %Relative position
 syms sx sy sz real
 %Relative velocity
