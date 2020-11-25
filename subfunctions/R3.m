@@ -1,6 +1,6 @@
 function [R] = R3(alpha)
 %R1 Returns the direction cosine matrix (DCM) associated with a rotation
-%arounf the third (y) axis 
+%arounf the third (z) axis 
 % alpha is the rotation anfle in radians
 
 R = [cos(alpha) sin(alpha) 0;
