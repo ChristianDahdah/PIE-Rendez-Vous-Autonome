@@ -1,5 +1,5 @@
 %Define variables for symbolic toolbox
-% Forces Input
+%Forces Input
 syms Fx Fy Fz real
 % Chaser mass and gravitational param
 syms m mu real
@@ -10,9 +10,9 @@ syms sx sy sz real
 %Relative velocity
 syms dsx dsy dsz real
 %Vectors in orbital frame
-r=[0 0 - rt]';
+r=[0 0 -rt]';
 w=[0 -w0 0]';
-s=[ sx sy sz]';
+s=[sx sy sz]';
 ds=[dsx dsy dsz]';
 F=[Fx Fy Fz]';
 acc=-skew(w)*skew(w)*s-2*skew(w)*ds+w0^2*r-mu*(s+r)/norm(s+r)^3+F/m;
