@@ -1,25 +1,25 @@
-%De f ine v a r i a b l e s f o r symbol ic toolbox
-% P2P r e l a t i v e a t t i t u d e angl e v a r i a b l e s
+%Define variables for symbolic toolbox
+% P2P relative attitude angle variables
 syms alphaDCDT betaDCDT gammaDCDT dalphaDCDT dbetaDCDT dgammaDCDT real
-% P2P r e l a t i v e angular v e l o c i t y v a r i a b l e s
+% P2P relative angular velocity variables
 syms wxDCDT wyDCDT wzDCDT dwxDCDT dwyDCDT dwzDCDT real
-% Target Docking por t a t t i t u d e Va r i abl e s
+% Target Docking por t attitude Variables
 syms alphaDTo betaDTo gammaDTo dalphaDTo dbetaDTo dgammaDTo real
-% Target r e l a t i v e angular v e l o c i t y v a r i a b l e s
+% Target relative angular velocity variables
 syms wxDTo wyDTo wzDTo dwxDTo dwyDTo dwzDTo real
-% Chaser I n e r t i a paramet res expr e s s ed in docking portm frame
+% Chaser Inertia paramet res expressed in docking portm frame
 syms ICDC11 ICDC12 ICDC13 ICDC21 ICDC22 ICDC23 ICDC31 ICDC32 ICDC33 mC real
-% Target I n e r t i a parameter s expr e s s ed in docking por t frame
+% Target Inertia parameter s expressed in docking port frame
 syms ITDT11 ITDT12 ITDT13 ITDT21 ITDT22 ITDT23 ITDT31 ITDT32 ITDT33 real
-% Docking po r t s p o s i t i o n s expr e s s ed in docking por t frame
+% Docking ports positions expressed in docking port frame
 syms rxDTDT ryDTDT rzDTDT rxDCDC ryDCDC rzDCDC real
-% r e l a t i v e p o s i t i o n v a r i a b l e s
+% relative position variables
 syms sxDT syDT szDT rT dsxDT dsyDT dszDT mu real
-% Cont rol Input
+% Control Input
 syms TxDT TyDT TzDT TxDC TyDC TzDC FxDC FyDC FzDC real
-% Other parameter s
+% Other parameters
 syms mu w0 real
-% Li n e r i s a t i o n point
+% Linerisation point
 syms aDT0 bDT0 cDT0 real
 
 %Kinematics P2P
@@ -33,7 +33,7 @@ cb*sg cb*cg 0 ;
 -sb*cg sb*sg cb] ;
 dAngleDC=B_angle *[wxDCDT;wyDCDT;wzDCDT] ;
 
-%Kinematics Target Orbi t a l
+%Kinematics Target Orbital
 AngleDTo=[alphaDTo ; betaDTo ;gammaDTo ] ;
 cg = cos(gammaDTo) ;
 sg = sin(gammaDTo) ;
@@ -43,7 +43,7 @@ B_angle=1/cb *[cg -sg 0;
 cb*sg cb*cg 0;
 -sb*cg sb*sg cb] ;
 dAngleDTo=B_angle *[wxDTo; wyDTo; wzDTo] ;
-%R el a ti v e Dynamics
+%Relative Dynamics
 ICDC=[ ICDC11 ICDC12 ICDC13 ;
 ICDC21 ICDC22 ICDC23 ;
 ICDC31 ICDC32 ICDC33 ] ;
@@ -59,18 +59,18 @@ wDCDT=[wxDCDT;wyDCDT;wzDCDT] ;
 wo=[0 -w0 0]';
 wIT=wDTo+ADTo*wo ;
 
-%Dynamics f o r a t t i t u d e DTO
+%Dynamics for attitude DTO
 dwDTo=ITDT\ (TDT- skew(wIT ) *(ITDT*wIT ) ) ;
 dwxDTo=dwDTo( 1 ) ;
 dwyDTo=dwDTo( 2 ) ;
 dwzDTo=dwDTo( 3 ) ;
-%Dynamics f o r a t t i t u d e DCDT
+%Dynamics for attitude DCDT
 dwDC=ICDC\ (TDC- skew (wDCDT+ADCDT*wIT ) *(ICDC*(wDCDT+ADCDT*wIT ) ) ) ...
 - ( skew ( -wDCDT) *(ADCDT*wDTo)+ADCDT*dwDTo) ;
 dwxDCDT=dwDC( 1 ) ;
 dwyDCDT=dwDC( 2 ) ;
 dwzDCDT=dwDC( 3 ) ;
-%P2P T r a n sl a ti o n dynamics
+%P2P Translation dynamics
 rTo = [ 0 ; 0 ; - rT ] ;
 sDCDT=[sxDT ; syDT ; szDT ] ;
 dsDCDT=[dsxDT ; dsyDT ; dszDT ] ;
@@ -94,11 +94,11 @@ ddsDCDT=-skew (dwDTo)*s ...
 +accDT ...
 +skew (ADCDT'*dwDC) *(rDCDT) ...
 +2*skew (ADCDT'*wDCDT)*skew (ADCDT'*wDCDT)*rDCDT;
-%Compute j a c o bi a n
+%Compute jacobian
 ftot =[dAngleDC ;dwDC; dAngleDTo ; dwDTo; dsDCDT; ddsDCDT ] ;
 Atot=jacobian ( ftot , [ AngleDC' wDCDT' AngleDTo' wDTo' sDCDT' dsDCDT'] ) ;
 Btot=jacobian ( ftot , [ TDC' TDT' FDC'] ) ;
-%L i n e a r i s a t i o n
+%Linearisation
 alphaDCDT=0;
 betaDCDT=0;
 gammaDCDT=0;
