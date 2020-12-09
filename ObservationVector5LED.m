@@ -1,7 +1,7 @@
 %state variables
 syms x y z vx vy vz real
 syms alpha beta gamma wx wy wz real
-%Camera v a r i a b l e s
+%Camera variables
 syms f D zmax ymax Azmax Elmax real
 ADCDT=R3(gamma)*R2( beta )*R1( alpha );
 sCT=[x y z ]'; %Position from chaser to target in chaser frame

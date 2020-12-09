@@ -25,7 +25,7 @@ I=[ I11 I12 I13 ;
 I21 I22 I23 ;
 I31 I32 I33 ] ;
 T=[Tx Ty Tz ]';
-Abo=R3(gamma)*R2(beta)*R1(alpha) ; %o r b i t a l to body a t t i t u d e matrix
+Abo=R3(gamma)*R2(beta)*R1(alpha) ; %orbital to body attitude matrix
 Omega=[wx ;wy ;wz] ;
 Omega0=[0 -w0 0]';
 w=Omega+Abo*Omega0 ;
