@@ -1,4 +1,4 @@
-function U = fcn_MPC(X0, Xf, R0, Rf, Rp0, Rpf, output_sat, Q, R, T, N, A, B)
+function U = fcn_MPC(X0, Xf, output_sat, Q, R, T, N, A, B)
 % Function that returns the value of the next control step by using an MPC
 % controller with the specified parameters
 %
@@ -23,7 +23,7 @@ function U = fcn_MPC(X0, Xf, R0, Rf, Rp0, Rpf, output_sat, Q, R, T, N, A, B)
 %  X0 = [x0, y0, z0, vx0, vy0, zy0]
 %  Xf = [xf, yf, zf, vxf, vyf, vzf]
 %
-% Rotation is NOT YET included in the function.
+%  Rotation is NOT YET included in the function.
 
 u_max = output_sat(2); u_min= output_sat(1);
 
@@ -89,7 +89,7 @@ solver = nlpsol('solver', 'ipopt', nlp_prob, opts);
 args = struct;
 % inequality constraints (state constraints)
 args.lbg(1:n_states*(N+1)) = 0;  % equality constraints
-args.ubg(1:n_states*(N+1)) = 0;   % "" 
+args.ubg(1:n_states*(N+1)) = 0;  % "" 
 
 % State constraints (so that the spacecraft doesn't fuck off to space)
 args.lbx(1:n_states*(N+1),1) = -10000;
@@ -101,10 +101,10 @@ args.ubx(n_states*(N+1)+1:n_states*(N+1)+n_controls*N,1) = u_max;
 
 %% MPC resolution
 u0 = zeros(N,n_controls);  % two control inputs 
-X0 = repmat(X0,1,N+1); % Initialization of the states
+x0 = repmat(X0,1,N+1); % Initialization of the states
 
 args.p   = [X0;Xf]; % set the values of the parameters vector - STATES
-args.x0 = [reshape(X0',n_states*(N+1),1); reshape(u0',n_controls*N,1)]; % initial value of the optimization VARIABLES
+args.x0 = [reshape(x0',n_states*(N+1),1); reshape(u0',n_controls*N,1)]; % initial value of the optimization VARIABLES
 sol = solver('x0', args.x0, 'lbx', args.lbx, 'ubx', args.ubx,...
             'lbg', args.lbg, 'ubg', args.ubg,'p',args.p);
         
