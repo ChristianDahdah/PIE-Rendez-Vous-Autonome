@@ -1,3 +1,5 @@
+addpath('../subfunctions')
+
 %Define variables for symbolic toolbox
 % P2P relative attitude angle variables
 syms alphaDCDT betaDCDT gammaDCDT dalphaDCDT dbetaDCDT dgammaDCDT real
