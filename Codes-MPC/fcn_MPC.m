@@ -1,4 +1,4 @@
-function U = fcn_MPC(X0, Xf, R0, Rf, Rp0, Rpf, output_sat, T, N, A, B)
+function U = fcn_MPC(X0, Xf, R0, Rf, Rp0, Rpf, output_sat, Q, R, T, N, A, B)
 % Function that returns the value of the next control step by using an MPC
 % controller with the specified parameters
 %
@@ -10,6 +10,14 @@ function U = fcn_MPC(X0, Xf, R0, Rf, Rp0, Rpf, output_sat, T, N, A, B)
 %        n0= sqrt(mu/R0^3)
 %        mu= 398600.4418  (km^3/s^2)
 %        R0= 400  (km) 
+%
+%  minimize x'*Q*x + u'*R*u. Example :
+%
+%  Q = zeros(n_states,n_states);
+%  Q(1,1) = 10; Q(2,2) = 10; Q(3,3) = 10;
+%  Q(4,4) = 10; Q(5,5) = 10; Q(6,6) = 10; % weighing matrices (states)
+%  R = zeros(n_controls,n_controls);
+%  R(1,1) = 0.05; R(2,2) = 0.05; R(3,3) = 0.05; % weighing matrices (controls)
 %
 %  output_sat = [sat_min, sat_max]
 %  X0 = [x0, y0, z0, vx0, vy0, zy0]
@@ -36,11 +44,6 @@ P = SX.sym('P',n_states + n_states);
 X = SX.sym('X',n_states,(N+1));
 % A Matrix that represents the states over the optimization problem.
 
-Q = zeros(n_states,n_states);
-Q(1,1) = 10; Q(2,2) = 10; Q(3,3) = 10;
-Q(4,4) = 10; Q(5,5) = 10; Q(6,6) = 10; % weighing matrices (states)
-R = zeros(n_controls,n_controls);
-R(1,1) = 0.05; R(2,2) = 0.05; R(3,3) = 0.05; % weighing matrices (controls)
 %P_lyap= dlyap(A,Q);
 
 obj = 0; % Objective function
