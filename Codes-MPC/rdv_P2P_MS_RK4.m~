@@ -1,19 +1,16 @@
 % Port to port dynamics model derived in Pirat 2018
 clear all, clc
-close all;
 
-addpath('D:/Documents/3A SUPAERO/PIE/Github/CasadiMatlab')
-%addpath('C:/CaSaDi')
-
+addpath('/home/charles/casadi') % CHANGE THIS FOR YOUR PARTICULAR SITUATION
 import casadi.*
 
 %% Dynamic model import
-addpath('D:/Documents/3A SUPAERO/PIE/Github/models')
+addpath('../models')
 load matrices.mat % Simplified model (diagonal inertia matrix)
 % load fullmatrices.mat % Full linearized dynamic model (more complex model)
 
 %% Initial conditions (_i subscript)
-alphaDCDT_i = 0.2; betaDCDT_i = 0.1; gammaDCDT_i = 0; % DC -> DT initial Euler angles
+alphaDCDT_i = 0; betaDCDT_i = 0; gammaDCDT_i = 0; % DC -> DT initial Euler angles
 eulerDCDT_i = [alphaDCDT_i; betaDCDT_i; gammaDCDT_i];
 
 sxDT_i = -10; syDT_i = 0; szDT_i = 0; % Initial chaser position wrt target (in target docking frame)
@@ -56,7 +53,7 @@ clear sxDT syDT szDT alphaDCDT betaDCDT gammaDCDT
 %% MPC Initialization
 
 
-T = 0.2; % sampling time [s]
+T = 1; % sampling time [s]
 N = 50; % prediction horizon 
 
 u_max = 2; u_min= -0.1; % Obsolete
@@ -100,8 +97,8 @@ Q = 10*eye(n_states); % TO REFINE
 %Q(1,1) = 10; Q(2,2) = 10; Q(3,3) = 10; % 
 %Q(4,4) = 10; Q(5,5) = 10; Q(6,6) = 10; % weighing matrices (states)
 %R = zeros(n_controls,n_controls);
-R(1,1) = 0.5; R(2,2) = 0.5; R(3,3) = 0.5; % weighing matrices (controls)
-R(4,4) = 0.05; R(5,5) = 0.05; R(6,6) = 0.05; % weighing matrices (controls)
+%R(1,1) = 0.05; R(2,2) = 0.05; R(3,3) = 0.05; % weighing matrices (controls)
+R = 0.05*eye(n_controls);
 %P_lyap= dlyap(A,Q);
 
 obj = 0; % Objective function
@@ -181,7 +178,7 @@ mpciter = 0; xx1 = []; u_cl = [];
 % than 10^-2 and the number of mpc steps is less than its maximum
 % value.
 main_loop = tic;
-while(norm((x0-xs),2) > 0.005 && mpciter < 100)
+while(norm((x0-xs),2) > 0.05 && mpciter < 100)
     args.p   = [x0;xs]; % set the values of the parameters vector - STATES
     args.x0 = [reshape(X0',n_states*(N+1),1); reshape(u0',n_controls*N,1)]; % initial value of the optimization VARIABLES
     sol = solver('x0', args.x0, 'lbx', args.lbx, 'ubx', args.ubx,...
@@ -288,18 +285,13 @@ legend('F_x', 'F_y', 'F_z');
 
 %% 3D plot     
 figure
-    plot3(xs(7),xs(8),xs(9),'ob'); hold on, grid on
-    plot3(xx(7,1),xx(8,1),xx(9,1),'*r')    
-    
-    xlim([min(0,min(xx(7,:))) max(0,max(xx(7,:)))])
-    ylim([min(0,min(xx(7,:))) max(0,max(xx(7,:)))])
-    zlim([min(0,min(xx(7,:))) max(0,max(xx(7,:)))])
-    
-    
-    %ylim([min(0,min(xx(8,:))) max(0,max(xx(8,:)))])
-    %zlim([min(0,min(xx(9,:))) max(0,max(xx(9,:)))])
+    plot3(xs(1),xs(2),xs(3),'ob'); hold on, grid on
+    plot3(xx(1,1),xx(2,1),xx(3,1),'*r')
+    xlim([min(0,min(xx(1,:))) max(0,max(xx(1,:)))])
+    ylim([min(0,min(xx(2,:))) max(0,max(xx(2,:)))])
+    zlim([min(0,min(xx(3,:))) max(0,max(xx(3,:)))])
     xlabel('x'), ylabel('y'), zlabel('z')
-    for i=2:length(xx(7,:))
-      plot3(xx(7,i),xx(8,i),xx(9,i),'*r');
+    for i=2:length(xx(1,:))
+      plot3(xx(1,i),xx(2,i),xx(3,i),'*r');
       %pause(0.1);
     end
