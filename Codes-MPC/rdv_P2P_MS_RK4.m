@@ -2,9 +2,9 @@
 clear all, clc
 close all;
 
-%addpath('/home/charles/casadi') % CHANGE THIS FOR YOUR PARTICULAR SITUATION
+addpath('/home/charles/casadi') % CHANGE THIS FOR YOUR PARTICULAR SITUATION
 
-addpath('C:/CaSaDi')
+%addpath('C:/CaSaDi')
 import casadi.*
 
 %% Dynamic model import
@@ -13,7 +13,7 @@ load matrices.mat % Simplified model (diagonal inertia matrix)
 % load fullmatrices.mat % Full linearized dynamic model (more complex model)
 
 %% Initial conditions (_i subscript)
-alphaDCDT_i = 0.2; betaDCDT_i = 0; gammaDCDT_i = 0; % DC -> DT initial Euler angles
+alphaDCDT_i = 0.2; betaDCDT_i = 0.1; gammaDCDT_i = 0; % DC -> DT initial Euler angles
 eulerDCDT_i = [alphaDCDT_i; betaDCDT_i; gammaDCDT_i];
 
 sxDT_i = -10; syDT_i = 0; szDT_i = 0; % Initial chaser position wrt target (in target docking frame)
