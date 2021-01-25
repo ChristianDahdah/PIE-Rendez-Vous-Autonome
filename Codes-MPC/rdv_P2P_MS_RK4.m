@@ -1,7 +1,10 @@
 % Port to port dynamics model derived in Pirat 2018
 clear all, clc
+close all;
 
-addpath('/home/charles/casadi') % CHANGE THIS FOR YOUR PARTICULAR SITUATION
+%addpath('/home/charles/casadi') % CHANGE THIS FOR YOUR PARTICULAR SITUATION
+
+addpath('C:/CaSaDi')
 import casadi.*
 
 %% Dynamic model import
