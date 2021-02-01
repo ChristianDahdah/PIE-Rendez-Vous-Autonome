@@ -2,13 +2,15 @@
 clear all, clc
 close all;
 
-addpath('D:/Documents/3A SUPAERO/PIE/Github/CasadiMatlab')
+%addpath('D:/Documents/3A SUPAERO/PIE/Github/CasadiMatlab')
 %addpath('C:/CaSaDi')
+addpath('/home/charles/casadi')
 
 import casadi.*
 
 %% Dynamic model import
-addpath('D:/Documents/3A SUPAERO/PIE/Github/models')
+%addpath('D:/Documents/3A SUPAERO/PIE/Github/models')
+addpath('../models')
 load matrices.mat % Simplified model (diagonal inertia matrix)
 % load fullmatrices.mat % Full linearized dynamic model (more complex model)
 
