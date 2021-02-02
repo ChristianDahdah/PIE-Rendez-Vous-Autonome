@@ -52,7 +52,7 @@ ICDC11 = 2; ICDC22 = 4; ICDC33 = 6; % en kg.m^2 (refine these values)
 ITDT11 = 2; ITDT22 = 4; ITDT33 = 6;
 
 
-A2  = eval(Ar);
+A  = eval(Ar);
 B = eval(Br);
 
 
