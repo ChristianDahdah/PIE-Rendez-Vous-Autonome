@@ -1,6 +1,32 @@
+% This script simulates a targer-chaser dynamic environment for testing the MPC law.
+% It relies on a more realistic, nonlinear version of the linear model of
+% the chaser-target dynamics internaly used by the MPC law ; and it provide
+% the simulated measurement used by the MPC law and enables to analyse its results.
+% The environment should be simulated with a (much) smaller time step (dt)
+% than the MPC time step (T).
+
+% TO DO:
+%   * add simulated measurement noise to the simulated measurements given to the MPC
+%   * add environmental disturbances to the nonlinear model (atmosphericdrag, etc)
+%   * add uncertainties and model errors to the nonlinear model (error on the position of the center of mass,..) to run robustness campains (monte carlo)
+%   * define metrics to quantify the quality of the trajectory provided by the MPC law (energy consumed, time, distance to approach corridor, etc)
+
 clear all, close all, clc
 
-% Physical model
+addpath('../Codes-MPC');
+addpath('../models');
+
+%% Overall simulation setup
+output_sat = [0; 50];
+x = [-80 ;-40 ; 0; 0; 0; 0];    % initial state
+X = [x]; % History of states
+xf = [0 ; 0 ; 0 ; 0; 0; 0]; % reference state
+U = []; % History of control steps
+t = 0; % reference simulation current time
+dt = 0.01; % time step of progression of simulation time t (time step of numerical integration of nonlinear model)
+
+%% MPC setup
+% Linear model to be used by the MPC
 mu= 398600.4418; % en km^3/s^2
 R0= 400; % en km 
 n0= sqrt(mu/R0^3);
@@ -10,44 +36,44 @@ A= [0 0 0 1 0 0;
     3*n0^2 0 0 0 2*n0 0;
     0 0 0 -2*n0 0 0;
     0 0 0 0 0 -n0^2];
-n_states = length(A);
-B = [0 0 0; 0 0 0; 0 0 0; 1 0 0; 0 1 0; 0 0 1];
+B = [0 0 0;
+     0 0 0;
+     0 0 0;
+     1 0 0;
+     0 1 0;
+     0 0 1];
+linear_model_order = length(A);
 s = size(B);
-n_controls = s(2);
-output_sat = [0; 50];
-t0 = 0;
-x0 = [-80 ;-40 ; 0; 0; 0; 0];    % initial condition
-x = x0;
-X = [x]; % History of states
-xf = [0 ; 0 ; 0 ; 0; 0; 0]; % Reference posture
-U = []; % History of control steps
+nb_controls = s(2);
 
-% Environment simulation parameters
-t = 0;
-dt = 0.01;
-
-% Optimisation parameters
+% Optimisation parameters for the MPC
 T = 0.1; % sampling time [s]
 N = 500; % prediction horizon
-Q = zeros(n_states,n_states);
+Q = zeros(linear_model_order,linear_model_order);
 Q(1,1) = 10; Q(2,2) = 10; Q(3,3) = 10;
-Q(4,4) = 10; Q(5,5) = 10; Q(6,6) = 10; % weighing matrice (precision/time)
-R = zeros(n_controls,n_controls);
-R(1,1) = 0.05; R(2,2) = 0.05; R(3,3) = 0.05; % weighing matrice (controls)
-mpciter_max = 200;
-precision = 0.05;
+Q(4,4) = 10; Q(5,5) = 10; Q(6,6) = 10; % weighing matrice (precision and duration)
+R = zeros(nb_controls,nb_controls);
+R(1,1) = 0.05; R(2,2) = 0.05; R(3,3) = 0.05; % weighing matrice (controls and energy)
+mpciter_max = 500; % Maximum iteration of the MPC control, to avoid an infinite running time if the MPC law can't provide convergence
+precision = 0.05; % Precision threshold beyond which we consider to have reached the goal and stop simulation
 
+%% Main simulation loop (defines the simulation current time t, which increases by dt every loop run)
+% Note : the simulation internaly relies on quaternions for the relative
+% attitude, which are converted to euler angle only when calling the MPC
+% function
 
 mpciter = 0;
-
 main_loop = tic;
 while(norm((x-xf),2)>precision && mpciter<mpciter_max)
     
-    % MPC control step
-    if(t-mpciter*T>=0):
-        x_mpc = NL2MPC(x);
+    % Determine next control step with MPC --- not at every simulation step : period of T based on the simulation current time t
+    if((t-mpciter*T)>=0)
+        x_mpc = x; % Extraction of euler-angles information from simulation state (expressed in quaternions)
         
-        u = fcn_MPC(x_mpc, xf, output_sat, Q, R, T, N, A, B)
+        % add measurement noise to x_mpc here
+        
+        u = fcn_MPC(x_mpc, xf, output_sat, Q, R, T, N, A, B); % Next input to be used by the simulation until the next call to MPC (period T)
+        u = u';
         
         mpciter
         mpciter = mpciter + 1;
@@ -69,8 +95,9 @@ main_loop_time = toc(main_loop)
 
 U = [U zeros(n_controls,1)];
 
-simiter = (t/dt);
+simiter = (t/dt); % Total number of simulation steps (used for the plots)
 
+%% Results and plots
 'Simulation iterations:'
 simiter
 'Simulated time:'
@@ -80,14 +107,14 @@ mpciter
 
 figure
 subplot(211)
-plot(1:simiter+1,X(1,:),1:simiter+1,X(2,:),1:simiter+1,X(3,:)), grid on
+plot(1:round(simiter)+1,X(1,:),1:round(simiter)+1,X(2,:),1:round(simiter)+1,X(3,:)), grid on
 title('MPC simulation over axes x, y and z','FontSize',18)
 xlabel('iteration','FontSize',15)
 ylabel('x,y,z','FontSize',15)
 legend('x','y','z')
 
 subplot(212)
-plot(1:simiter,U(:,1),1:simiter,U(:,2),1:simiter,U(:,3)), grid on
+plot(1:round(simiter)+1,U(1,:),1:round(simiter)+1,U(2,:),1:round(simiter)+1,U(3,:)), grid on
 title('Control singals','FontSize',18)
 xlabel('iteration','FontSize',15)
 ylabel('Control signals','FontSize',15)

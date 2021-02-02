@@ -1,4 +1,9 @@
 function U = fcn_MPC(X0, Xf, output_sat, Q, R, T, N, A, B)
+
+% DO NOT FORGET TO CHANGE THE FOLLOWING PATH
+addpath('C:\Users\Timothée\Documents\PIE\MPC\casadi')
+import casadi.*
+
 % Function that returns the value of the next control step by using an MPC
 % controller with the specified parameters
 %
