@@ -22,6 +22,8 @@ q3 = [cg; 0; 0; sg];
 
 quat = ProdQuat(q1, ProdQuat(q2,q3));
 
+quat = quat';
+
 
 % qw = ca * cb * cg - sa * sb * sg;
 % 
