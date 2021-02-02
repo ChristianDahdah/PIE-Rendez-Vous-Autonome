@@ -23,7 +23,7 @@ Kc=lqr(A,B,Q,R);
 
 %% Calcul Kf
 % Système commandes ==> mesures:
-G=ss(A,B,C,D);
+% G=ss(A,B,C,D);
 % Réglage du filtre:
 W=0.01*B*B'; % bruit d'état avec DSP=0.1
 V=eye(2);   % bruit de mesure avec DSP=1
@@ -40,18 +40,12 @@ D_t = Ema_t*B;
 C_T = int(D_t*D_t',t,0,T);
 C_t = subs(C_T,T,t);
 
-%% APPLICATION NUMERIQUE
-
-Ea_t = subs(Ea_t);
-C_T = subs(C_T);
-C_t = subs(C_t);
-D_t = subs(D_t);
 %% Calcul P_0, X_t et U_t (boucle ouverte)(premiere condition initiale)
 
-Ninterval = 6; NPT = Ninterval + 1;
+Ninterval = 10; NPT = Ninterval + 1;
 
 % Subsitution T par sa valeur
-T = 2*pi/w/2;%Torb/10;
+T = 2*pi/w/4;%Torb/10;
 C_T = subs(C_T);
 Ema_T = subs(Ema_t, t, T);
 
@@ -97,6 +91,8 @@ for i =1:length(hold_points(:,1))-1
     ts = timeseries(trajX',[0:Ninterval]*dt + ones(1,NPT) * (NPT+1) * dt * (i-1));
     ts_full = append(ts_full,ts);
 end
+figure()
+plot(ts_full.Data(:,1),ts_full.Data(:,2))
 
 %% methode analytique
 
@@ -147,3 +143,5 @@ for i =1:length(hold_points(:,1))-1
     ts_full_analytique = append(ts_full_analytique,ts);
 end
     
+figure()
+plot(ts_full_analytique.Data(:,1),ts_full_analytique.Data(:,2))
