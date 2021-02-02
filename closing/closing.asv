@@ -1,4 +1,4 @@
-function [ts_full_analytique,ts_full,Kf,Kc] = closing(altitude, Q, R, W, V, Ninterval, hold_points)
+function [ts_full_analytique,ts_full,Kf,Kc, u, etat, etat_est] = closing(altitude, Q, R, W, V, Ninterval, hold_points)
 % chaque jump est effectué en un quart d'orbite
 % ts_full_analytique = trajectoire en deux poussées
 % ts_full = trajectoire avec PMP
@@ -136,5 +136,11 @@ end
 figure()
 plot(ts_full_analytique.Data(:,1),ts_full_analytique.Data(:,2))
 
+%%
+mod = 1; % two burns
+% mod = -1; % PMP
+
+exit = sim('../closing/obj_atteint');
+u, etat, etat_est
 end
 

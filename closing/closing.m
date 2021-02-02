@@ -1,4 +1,4 @@
-function [ts_full_analytique,ts_full,Kf,Kc] = closing(altitude, Q, R, W, V, Ninterval, hold_points)
+function [ts_full_analytique,ts_full,Kf,Kc,SimOut] = closing(altitude, Q, R, W, V, Ninterval, hold_points)
 % chaque jump est effectué en un quart d'orbite
 % ts_full_analytique = trajectoire en deux poussées
 % ts_full = trajectoire avec PMP
@@ -122,8 +122,8 @@ for i =1:length(hold_points(:,1))-1
     
     trajX = zeros(4,NPT);
     
-    vy0 = w*(yf-6*(1-pi/2)*-x0-y0+2*(-xf-4*-x0))/(8-3*pi/2)
-    vx0 = w * (-xf-4*-x0)-2*vy0
+    vy0 = w*(yf-6*(1-pi/2)*-x0-y0+2*(-xf-4*-x0))/(8-3*pi/2);
+    vx0 = w * (-xf-4*-x0)-2*vy0;
     
     for k = 1:NPT
         [x,y,vx,vy] = analytical_inverted(-x0,y0,vx0,vy0,0,0,w,dt*(k-1));
@@ -136,5 +136,13 @@ end
 figure()
 plot(ts_full_analytique.Data(:,1),ts_full_analytique.Data(:,2))
 
+%%
+mod = 1; % two burns
+% mod = -1; % PMP
+
+SimOut = sim('../closing/obj_atteint')
+u = SimOut.get('yout').get('commande');
+etat = SimOut.get('yout').get('etat');
+etat_est = SimOut.get('yout').get('etat_est');
 end
 
