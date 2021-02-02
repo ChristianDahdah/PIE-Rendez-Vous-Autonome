@@ -1,26 +1,37 @@
 function quat = euler2quat(euler)
 
-roll = euler(1);
-pitch = euler(2);
-yaw = euler(3);
+alpha = euler(1);
+beta = euler(2);
+gamma = euler(3);
 
-cr = cos(roll * 0.5);
-sr = sin(roll * 0.5);
-cy = cos(yaw * 0.5);
-sy = sin(yaw * 0.5);
-cp = cos(pitch * 0.5);
-sp = sin(pitch * 0.5);
+ca = cos(alpha * 0.5);
+sa = sin(alpha * 0.5);
+cb = cos(beta * 0.5);
+sb = sin(beta * 0.5);
+cg = cos(gamma * 0.5);
+sg = sin(gamma * 0.5);
 
 
-qw = cr * cy * cp - sr * sy * sp;
 
-qx = sr * cy * cp + cr * sy * sp;
+%qw = ca*cb*cg-sa*sb*sg;
+%qx=
 
-qy = cr * sy * cp + sr * cy * sp;
+q1 = [ca; sa; 0; 0];
+q2 = [cb; 0; sb; 0];
+q3 = [cg; 0; 0; sg];
 
-qz = cr * cy * sp - sr * sy * cp;
+quat = ProdQuat(q1, ProdQuat(q2,q3));
 
-%To verifie the order of qz and qy
-quat = [qw qx qz qy];
+
+% qw = ca * cb * cg - sa * sb * sg;
+% 
+% qx = sa * cb * cg + ca * sb * sg;
+% 
+% qy = ca * sb * cg + sa * cb * sg;
+% 
+% qz = ca * cb * sg - sa * sb * cg;
+% 
+% %To verifie the order of qz and qy
+% quat = [qw qx qz qy]
 
 end

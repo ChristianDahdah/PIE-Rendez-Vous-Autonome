@@ -3,8 +3,8 @@ clear all, clc
 close all;
 
 %addpath('D:/Documents/3A SUPAERO/PIE/Github/CasadiMatlab')
-%addpath('C:/CaSaDi')
-addpath('/home/charles/casadi')
+addpath('C:/CaSaDi')
+%addpath('/home/charles/casadi')
 
 import casadi.*
 
