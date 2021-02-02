@@ -32,12 +32,15 @@ import casadi.*
 
 u_max = output_sat(2); u_min= output_sat(1);
 
+a = SX.sym('alpha'); b = SX.sym('beta'); g = SX.sym('gamma');
+wx = SX.sym('omegax'); wy = SX.sym('omegay'); wz = SX.sym('omegaz');
 x = SX.sym('x'); y = SX.sym('y'); z = SX.sym('z');
 xp = SX.sym('xp'); yp = SX.sym('yp'); zp = SX.sym('zp');
-states = [x;y;z;xp;yp;zp]; n_states = length(states);
+states = [a;b;g;wx;wy;wz;x;y;z;xp;yp;zp]; n_states = length(states);
 
-ux = SX.sym('ux'); uy = SX.sym('uy'); uz = SX.sym('uz');
-controls = [ux;uy;uz]; n_controls = length(controls);
+fx = SX.sym('Fx'); fy = SX.sym('Fy'); fz = SX.sym('Fz');
+tx = SX.sym('Tx'); ty = SX.sym('Ty'); tz = SX.sym('Tz');
+controls = [fx;fy;fz;ux;uy;uz]; n_controls = length(controls);
 
 rhs= A*states + B*controls;
 

@@ -15,6 +15,7 @@ clear all, close all, clc
 
 addpath('../Codes-MPC');
 addpath('../models');
+load('../models/fullmatrices.mat');
 
 %% Overall simulation setup
 output_sat = [0; 50];
@@ -30,18 +31,8 @@ dt = 0.01; % time step of progression of simulation time t (time step of numeric
 mu= 398600.4418; % en km^3/s^2
 R0= 400; % en km 
 n0= sqrt(mu/R0^3);
-A= [0 0 0 1 0 0;
-    0 0 0 0 1 0;
-    0 0 0 0 0 1;
-    3*n0^2 0 0 0 2*n0 0;
-    0 0 0 -2*n0 0 0;
-    0 0 0 0 0 -n0^2];
-B = [0 0 0;
-     0 0 0;
-     0 0 0;
-     1 0 0;
-     0 1 0;
-     0 0 1];
+A = Ar;
+B = Br;
 linear_model_order = length(A);
 s = size(B);
 nb_controls = s(2);
@@ -68,7 +59,10 @@ while(norm((x-xf),2)>precision && mpciter<mpciter_max)
     
     % Determine next control step with MPC --- not at every simulation step : period of T based on the simulation current time t
     if((t-mpciter*T)>=0)
-        x_mpc = x; % Extraction of euler-angles information from simulation state (expressed in quaternions)
+        euler = quat2euler(x(1:4)); % Extraction of euler-angles information from simulation state (expressed in quaternions)
+        euler = euler';
+        
+        x_mpc = [euler;x(5:13)];
         
         % add measurement noise to x_mpc here
         
@@ -82,10 +76,10 @@ while(norm((x-xf),2)>precision && mpciter<mpciter_max)
     U = [U u];
     
     % Environment propagation vith RK4
-    k1 = nonlinearModel(x,u,t);
-    k2 = nonlinearModel(x+k1*dt/2,u,t+dt/2);
-    k3 = nonlinearModel(x+k2*dt/2,u,t+dt/2);
-    k4 = nonlinearModel(x+k3*dt,u,t+dt);
+    k1 = P2P_DynCin(x,u);
+    k2 = P2P_DynCin(x+k1*dt/2,u);
+    k3 = P2P_DynCin(x+k2*dt/2,u);
+    k4 = P2P_DynCin(x+k3*dt,u);
     
     x = x + (dt/6)*(k1+2*k2+2*k3+k4);
     t = t + dt;
