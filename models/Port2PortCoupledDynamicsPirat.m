@@ -108,7 +108,7 @@ ddsDCDT=-skew(dwDTo)*s...
 
 %Compute jacobian
 ftot =[dAngleDC ;dwDC; dAngleDTo ;dwDTo;dsDCDT;ddsDCDT] ;
-Atot= jacobian (ftot, [ AngleDC' wDCDT' AngleDTo' wDTo' sDCDT' dsDCDT']);
+Atot= jacobian(ftot, [AngleDC' wDCDT' AngleDTo' wDTo' sDCDT' dsDCDT']);
 Btot= jacobian(ftot, [TDC' TDT' FDC']);
 
 %Linearisation

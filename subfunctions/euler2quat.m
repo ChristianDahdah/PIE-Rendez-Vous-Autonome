@@ -4,12 +4,12 @@ alpha = euler(1);
 beta = euler(2);
 gamma = euler(3);
 
-ca = cos(alpha * 0.5);
-sa = sin(alpha * 0.5);
-cb = cos(beta * 0.5);
-sb = sin(beta * 0.5);
-cg = cos(gamma * 0.5);
-sg = sin(gamma * 0.5);
+ca = cos(alpha*0.5);
+sa = sin(alpha*0.5);
+cb = cos(beta*0.5);
+sb = sin(beta*0.5);
+cg = cos(gamma*0.5);
+sg = sin(gamma*0.5);
 
 
 

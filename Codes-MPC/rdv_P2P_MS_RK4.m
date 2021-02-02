@@ -32,7 +32,9 @@ dsDT_ref = [0;0;0];
 
 %% Working point selection 
 mu= 398600.4418e9; % en m^3/s^2
-rT= 400e3; % en m 
+hT = 400e3; % en m
+rT= 6378e3+hT; % en m 
+
 w0= sqrt(mu/rT^3);
 
 mC = 12 ; % chaser mass in kg
@@ -50,13 +52,12 @@ ICDC11 = 2; ICDC22 = 4; ICDC33 = 6; % en kg.m^2 (refine these values)
 ITDT11 = 2; ITDT22 = 4; ITDT33 = 6;
 
 
-A  = eval(Ar);
+A2  = eval(Ar);
 B = eval(Br);
 
 
 clear sxDT syDT szDT alphaDCDT betaDCDT gammaDCDT
 %% MPC Initialization
-
 
 T = 0.2; % sampling time [s]
 N = 50; % prediction horizon 
