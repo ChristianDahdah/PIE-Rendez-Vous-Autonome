@@ -1,3 +1,5 @@
+clearvars;
+close all;
 
 
 % Loading Pirat generated matrices
@@ -38,9 +40,6 @@ ITDT31 = ITDT(3,1); ITDT32 = ITDT(3,2); ITDT33 = ITDT(3,3);
 alphaDCDT_i = 0.2; betaDCDT_i = 0.1; gammaDCDT_i = 0; % DC -> DT initial Euler angles
 eulerDCDT_i = [alphaDCDT_i; betaDCDT_i; gammaDCDT_i];
 
-sxDT_i = -10; syDT_i = 0; szDT_i = 0; % Initial chaser position wrt target (in target docking frame)
-sDT_i = [sxDT_i; syDT_i; szDT_i];
-
 omegaDCDT_i = [0;0;0]; % Immobile chaser at t = 0
 dsDT_i = [0;0;0]; % Immobile target at t = 0
 
@@ -59,7 +58,7 @@ w0= sqrt(mu/rT^3);
 % symbolic implementation)
 
 % Initial chaser position wrt target (in target docking frame)
-sxDT = sxDT_i; syDT = syDT_i; szDT =  szDT_i;
+%sxDT = sxDT_i; syDT = syDT_i; szDT =  szDT_i;
 
 % DC -> DT initial Euler angles
 alphaDCDT = alphaDCDT_i; betaDCDT = betaDCDT_i; gammaDCDT = gammaDCDT_i;
@@ -76,7 +75,7 @@ aDT0 = 50*pi/180; bDT0 = 50*pi/180; cDT0 = 50*pi/180;
 A  = eval(Ar);
 B = eval(Br);
 
-save('../initialization/linear_model.mat', 'A', 'B')
-save('../initialization/parameters.mat', 'mu','rT','w0','ICDC', 'mC', 'ITDT',...
-    'eulerDCDT_i', 'sDT_i', 'omegaDCDT_i', ...
+save('./initialization/linear_model.mat', 'A', 'B')
+save('./initialization/parameters.mat', 'mu','rT','w0','ICDC', 'mC', 'ITDT',...
+    'eulerDCDT_i', 'omegaDCDT_i', ...
     'dsDT_i')

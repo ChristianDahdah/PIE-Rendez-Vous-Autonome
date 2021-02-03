@@ -8,8 +8,17 @@ function [X,dX,Theta,dTheta,u_cl] = final_approach_cylinder(sDT_i,T,N,radius)
 
 %This next line is to add the entire PIE-Rendez-Vous-Autonome folder and
 %its subfolders to the matlab search path
-addpath(genpath('/home/gaston/Desktop/Materias supaero/COS/PIE/PIE-Rendez-Vous-Autonome'))
+%addpath(genpath('/home/gaston/Desktop/Materias supaero/COS/PIE/PIE-Rendez-Vous-Autonome'))
+
+addpath('./CASADI') % for Linux users
 import casadi.*
+
+%% SIMULATION INPUT
+
+addpath('./models')
+load ./initialization/linear_model.mat A B % State-space representation of the coupled 6 dof system
+load ./initialization/parameters.mat mu rT w0 ICDC mC ITDT eulerDCDT_i omegaDCDT_i dsDT_i % Other parameters (inertia, constants) 
+
 
 %% MPC Initialization - This has changed when the new model was introduced
 
@@ -35,7 +44,7 @@ FDC = [FxDC; FyDC; FzDC];
 
 controls = [TDC;FDC]; n_controls = length(controls);
 
-[A,B] = fcn_CreateModel(sDT_i);
+
 
 
 %% From now on I do not care what model I use

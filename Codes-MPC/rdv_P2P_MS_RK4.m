@@ -11,9 +11,11 @@ import casadi.*
 %% Dynamic model import
 %addpath('D:/Documents/3A SUPAERO/PIE/Github/models')
 addpath('../models')
-load ../initialization/linear_model.mat % Simplified model (diagonal inertia matrix)
-load ../initialization/parameters.mat % Simplified model (diagonal inertia matrix)
-% load fullmatrices.mat % Full linearized dynamic model (more complex model)
+load ../initialization/linear_model.mat % State-space representation of the coupled 6 dof system
+load ../initialization/parameters.mat % Other parameters (inertia, constants) 
+
+% To change the input data, modify and run the code
+% initialization/CreateModel.m
 
 %% Initial conditions (_i subscript)
 % alphaDCDT_i = 0.2; betaDCDT_i = 0.1; gammaDCDT_i = 0; % DC -> DT initial Euler angles
