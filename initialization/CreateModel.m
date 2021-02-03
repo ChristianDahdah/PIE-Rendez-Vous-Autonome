@@ -1,12 +1,15 @@
+
+
 % Loading Pirat generated matrices
 load("FullMatrices");
 
 %% Chaser dimensions
-% Mass and Dimensions for a homogeneous parallelepiped satellite
+% Mass and Dimensions 
 
-mC = 1000; % Kg
+mC = 100; % chaser mass in kg
 
 x = 2; y = 1; z = 1; % Meters
+% for a homogeneous parallelepiped satellite :
 
 ICDC = (mC/12)* [ y^2+z^2   0   0;
                  0  x^2+z^2  0
@@ -21,7 +24,7 @@ ICDC31 = ICDC(3,1); ICDC32 = ICDC(3,2); ICDC33 = ICDC(3,3);
 
 mT = 7000; % Kg
 
-x = 4; y = 1.5; z = 1; % Meters
+x = 4; y = 1.5; z = 1; % Meters - doesn't matter if the target is fixed
 
 ITDT = (mT/12)* [ y^2+z^2   0   0;
                  0  x^2+z^2  0
@@ -42,17 +45,17 @@ omegaDCDT_i = [0;0;0]; % Immobile chaser at t = 0
 dsDT_i = [0;0;0]; % Immobile target at t = 0
 
 %% Reference variables (_ref subscript)
-eulerDCDT_ref = [0;0;0]; % Relative euler angles between docking ports
-omegaDCDT_ref = [0;0;0]; % No relative motion
-sDT_ref = [0;0;0]; %  
-dsDT_ref = [0;0;0];
+% eulerDCDT_ref = [0;0;0]; % Relative euler angles between docking ports
+% omegaDCDT_ref = [0;0;0]; % No relative motion
+% sDT_ref = [0;0;0]; %  
+% dsDT_ref = [0;0;0];
 
 %% Working point selection 
 mu= 398600.4418e9; % en m^3/s^2
-rT= 400e3 + 6371e3; % en m 
+rT= 400e3 + 6378e3; % en m 
 w0= sqrt(mu/rT^3);
 
-% State initial values (ce have to give them the same names as in Pirat's
+% State initial values (we have to give them the same names as in Pirat's
 % symbolic implementation)
 
 % Initial chaser position wrt target (in target docking frame)
@@ -67,10 +70,13 @@ rxDCDC = .1; ryDCDC = .1; rzDCDC = .1;
 % Position of the docking port of the target in the target's frame
 rxDTDT = -.1; ryDTDT = .1; rzDTDT = .1;
 
-% Docking port orientation
+% Target docking port orientation
 aDT0 = 50*pi/180; bDT0 = 50*pi/180; cDT0 = 50*pi/180;
 
 A  = eval(Ar);
 B = eval(Br);
 
-save("model", "A", "B")
+save('../initialization/linear_model.mat', 'A', 'B')
+save('../initialization/parameters.mat', 'mu','rT','w0','ICDC', 'mC', 'ITDT',...
+    'eulerDCDT_i', 'sDT_i', 'omegaDCDT_i', ...
+    'dsDT_i')
