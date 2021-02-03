@@ -1,4 +1,4 @@
-function [ts_full_analytique,ts_full,Kf,Kc,SimOut] = closing(altitude, Q, R, W, V, Ninterval, hold_points)
+function [ts_full_analytique,ts_full,Kf,Kc] = closing(altitude, A, B, C, Q, R, W, V, Ninterval, hold_points)
 % chaque jump est effectué en un quart d'orbite
 % ts_full_analytique = trajectoire en deux poussées
 % ts_full = trajectoire avec PMP
@@ -19,13 +19,6 @@ Torb = 2*pi*sqrt((altitude +Rt)^3/mu);
 % Subsitution w par sa valeur
 w = 2*pi/Torb ;
 
-A=[0 0 1 0;
-    0 0 0 1;
-    3*w*w 0 0 -2*w;
-    0 0 2*w 0];
-B = [0 0;0 0;1 0;0 1]; % on utilise les 2 commandes
-C=[1 0 0 0;0 1 0 0];
-D=zeros(2);
 
 %% Calcul Kc
 
@@ -43,8 +36,8 @@ Kf=Kf';
 
 %% Trajectoire Optimale
 syms t T real
-Ea_t = eye(4)+A*t+(A*t)^2/2+(A*t)^3/6;%expm(A*t);
-Ema_t = eye(4)-A*t+(A*t)^2/2-(A*t)^3/6;% expm(-A*t);
+Ea_t = eye(6)+A*t+(A*t)^2/2+(A*t)^3/6;%expm(A*t);
+Ema_t = eye(6)-A*t+(A*t)^2/2-(A*t)^3/6;% expm(-A*t);
 D_t = Ema_t*B;
 C_T = int(D_t*D_t',t,0,T);
 C_t = subs(C_T,T,t);
@@ -92,10 +85,11 @@ for i =1:length(hold_points(:,1))-1
     %X_t = Ea_t*(X_0 + C_t*P_0);  % Eq. (3)
     
     
-    trajX = zeros(4,NPT);
+    trajX = zeros(6,NPT);
     
     for k = 1:NPT
-        trajX(:,k) = double(Ea_t_list(:,(4*k-(4-1)):(4*k))*(X_0 + C_t_list(:,(4*k-(4-1)):(4*k))*P_0));
+        point = double(Ea_t_list(:,(6*k-(6-1)):(6*k))*(X_0 + C_t_list(:,(6*k-(6-1)):(6*k))*P_0));
+        trajX(:,k) = point;
     end
     
     ts = timeseries(trajX',[0:Ninterval]*dt + ones(1,NPT) * (NPT+1) * dt * (i-1));
@@ -120,14 +114,14 @@ for i =1:length(hold_points(:,1))-1
     zf = hold_points(i+1,1);
     xf = hold_points(i+1,2);
     
-    trajX = zeros(4,NPT);
+    trajX = zeros(6,NPT);
     
     vx0 = w*(xf+6*(1-pi/2)*z0-x0+2*(-zf+4*z0))/(8-3*pi/2);
     vz0 = -w * (-zf+4*z0)+2*vx0;
     
     for k = 1:NPT
         [x,z,vx,vz] = analytical_xz(x0,z0,vx0,vz0,0,0,w,dt*(k-1));
-        trajX(:,k) = [z,x,vz,vx];
+        trajX(:,k) = [z,x,0,vz,vx,0];
     end
     ts = timeseries(trajX',[0:Ninterval]*dt + ones(1,NPT) * (NPT+1) * dt * (i-1));
     ts_full_analytique = append(ts_full_analytique,ts);
@@ -136,13 +130,6 @@ end
 figure()
 plot(ts_full_analytique.Data(:,1),ts_full_analytique.Data(:,2))
 
-%%
-mod = 1; % two burns
-% mod = -1; % PMP
 
-SimOut = sim('../closing/obj_atteint')
-u = SimOut.get('yout').get('commande');
-etat = SimOut.get('yout').get('etat');
-etat_est = SimOut.get('yout').get('etat_est');
 end
 
