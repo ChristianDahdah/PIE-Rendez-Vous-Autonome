@@ -115,19 +115,19 @@ ts_full_analytique = timeseries();
 
 for i =1:length(hold_points(:,1))-1
     
-    x0 = hold_points(i,1);
-    y0 = hold_points(i,2);
-    xf = hold_points(i+1,1);
-    yf = hold_points(i+1,2);
+    z0 = hold_points(i,1);
+    x0 = hold_points(i,2);
+    zf = hold_points(i+1,1);
+    xf = hold_points(i+1,2);
     
     trajX = zeros(4,NPT);
     
-    vy0 = w*(yf-6*(1-pi/2)*-x0-y0+2*(-xf-4*-x0))/(8-3*pi/2);
-    vx0 = w * (-xf-4*-x0)-2*vy0;
+    vx0 = w*(xf+6*(1-pi/2)*z0-x0+2*(-zf+4*z0))/(8-3*pi/2);
+    vz0 = -w * (-zf+4*z0)+2*vx0;
     
     for k = 1:NPT
-        [x,y,vx,vy] = analytical_inverted(-x0,y0,vx0,vy0,0,0,w,dt*(k-1));
-        trajX(:,k) = [-x,y,-vx,vy];
+        [x,z,vx,vz] = analytical_xz(x0,z0,vx0,vz0,0,0,w,dt*(k-1));
+        trajX(:,k) = [z,x,vz,vx];
     end
     ts = timeseries(trajX',[0:Ninterval]*dt + ones(1,NPT) * (NPT+1) * dt * (i-1));
     ts_full_analytique = append(ts_full_analytique,ts);
