@@ -8,16 +8,16 @@ function [X,dX,Theta,dTheta,u_cl] = final_approach_cylinder(sDT_i,T,N,radius)
 
 %This next line is to add the entire PIE-Rendez-Vous-Autonome folder and
 %its subfolders to the matlab search path
-%addpath(genpath('/home/gaston/Desktop/Materias supaero/COS/PIE/PIE-Rendez-Vous-Autonome'))
+addpath(genpath('/home/gaston/Desktop/Materias supaero/COS/PIE/PIE-Rendez-Vous-Autonome'))
 
-addpath('./CASADI') % for Linux users
+%addpath('./CASADI') % for Linux users
 import casadi.*
 
 %% SIMULATION INPUT
 
-addpath('./models')
-load ./initialization/linear_model.mat A B % State-space representation of the coupled 6 dof system
-load ./initialization/parameters.mat mu rT w0 ICDC mC ITDT eulerDCDT_i omegaDCDT_i dsDT_i % Other parameters (inertia, constants) 
+%addpath('./models')
+load linear_model.mat A B % State-space representation of the coupled 6 dof system
+load parameters.mat mu rT w0 ICDC mC ITDT eulerDCDT_i omegaDCDT_i dsDT_i % Other parameters (inertia, constants) 
 
 
 %% MPC Initialization - This has changed when the new model was introduced
@@ -86,15 +86,15 @@ end
     
 a = sDT_i(1); b = sDT_i(2); c = sDT_i(3);
 
-if abs(a) > 0.5
+if max(abs(sDT_i)) == a
     for k=1:N+1
         g = [g; X(8,k)^2 + X(9,k)^2 - radius^2];
     end
-elseif abs(b) > 0.5
+elseif max(abs(sDT_i)) == b
     for k=1:N+1
         g = [g; X(7,k)^2 + X(9,k)^2 - radius^2];
     end
-elseif abs(c) > 0.5
+elseif max(abs(sDT_i)) == c
     for k=1:N+1
         g = [g; X(7,k)^2 + X(8,k)^2 - radius^2];
     end
