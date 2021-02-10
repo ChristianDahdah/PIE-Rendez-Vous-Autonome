@@ -10,21 +10,22 @@
 % in other codes, such as inertias, orbital parameters, etc.
 
 
-clearvars; close all; clc
+clearvars; close all; format long;
 
-addpath('../Codes-MPC');
-addpath('../models');
+addpath('./Codes-MPC');
+addpath('./models');
+addpath('./subfunctions');
 %load('../models/fullmatrices.mat');
 
 %% Import of the simulation parameters
 
 % A and B matrices of the linearized model (working point : final situation
 % with perfect docking)
-load('../initialization/linear_model');
+load('./initialization/linear_model');
 
 % Constants and Chaser, target parameters (change the
 % initialization/CreateModel.m routine to change them):
-load('../initialization/parameters');
+load('./initialization/parameters');
 
 
 dt = 0.1; % time step in seconds
@@ -35,13 +36,15 @@ t = 0:dt:Tmax;
 nStates = 13;
 nControls = 6;
 
+QDCDT_i = euler2quat(eulerDCDT_i); 
+
 
 XX_ss = zeros(nStates,length(t)); %% States history of the LINEAR SIMULATION
 XX_nl = zeros(nStates,length(t)); %% States history of the NON-LINEAR SIMULATION
 
 UU = zeros(nControls, length(t));
 
-XX(:,1) = [QDCDT_i ; omegaDCDT_i ; sDT_i ; dsDT_i ]
+XX(:,1) = [QDCDT_i ; omegaDCDT_i ; sDT_i ; dsDT_i ];
 
 
 
