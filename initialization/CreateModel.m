@@ -46,6 +46,9 @@ dsDT_i = [0;0;0]; % Immobile target at t = 0
 % Orientation of the target docking port frame wrt LVLH (o) frame
 alphaDTo_i= 50*pi/180; betaDTo_i = 50*pi/180; gammaDTo_i= 50*pi/180;
 
+eulerDTo_i = [alphaDTo_i; betaDTo_i; gammaDTo_i];
+
+sDT_i = 
 
 %% Reference variables (_ref subscript)
 % eulerDCDT_ref = [0;0;0]; % Relative euler angles between docking ports
@@ -62,7 +65,10 @@ w0= sqrt(mu/rT^3);
 % symbolic implementation)
 
 % Initial chaser position wrt target (in target docking frame)
-%sxDT = sxDT_i; syDT = syDT_i; szDT =  szDT_i;
+% 
+sxDT_i = -10; syDT_i = 0; szDT_i = 0; % Initial chaser position wrt target (in target docking frame)
+sDT_i = [sxDT_i; syDT_i; szDT_i];
+
 
 % DC -> DT initial Euler angles
 alphaDCDT = alphaDCDT_i; betaDCDT = betaDCDT_i; gammaDCDT = gammaDCDT_i;
@@ -80,6 +86,6 @@ A  = eval(Ar);
 B = eval(Br);
 
 save('./initialization/linear_model.mat', 'A', 'B')
-save('./initialization/parameters.mat', 'mu','rT','w0','ICDC', 'mC', 'ITDT',...
+save('./initialization/parameters.mat', 'mu','rT','w0','ICDC', 'mC', 'ITDT', 'eulerDTo_i', ...
     'eulerDCDT_i', 'omegaDCDT_i', ...
-    'dsDT_i')
+     'sDT_i', 'dsDT_i')
