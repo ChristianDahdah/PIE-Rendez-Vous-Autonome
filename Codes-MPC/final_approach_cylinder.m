@@ -86,15 +86,15 @@ end
     
 a = sDT_i(1); b = sDT_i(2); c = sDT_i(3);
 
-if max(abs(sDT_i)) == a
+if max(abs(sDT_i)) == abs(a)
     for k=1:N+1
         g = [g; X(8,k)^2 + X(9,k)^2 - radius^2];
     end
-elseif max(abs(sDT_i)) == b
+elseif max(abs(sDT_i)) == abs(b)
     for k=1:N+1
         g = [g; X(7,k)^2 + X(9,k)^2 - radius^2];
     end
-elseif max(abs(sDT_i)) == c
+elseif max(abs(sDT_i)) == abs(c)
     for k=1:N+1
         g = [g; X(7,k)^2 + X(8,k)^2 - radius^2];
     end
@@ -126,7 +126,19 @@ args.ubg(n_states*(N+1)+1 : n_states*(N+1)+(N+1)) = 0;
 % State constraints (so that the spacecraft doesn't fuck off to space)
 args.lbx(1:n_states*(N+1),1) = -10000;
 args.ubx(1:n_states*(N+1),1) = 10000;
-args.ubx(7:7:n_states*(N+1),1) = 1;
+%args.ubx(7:7:n_states*(N+1),1) = 1;
+
+if max(abs(sDT_i)) == abs(a)
+    args.lbx(10:10:n_states*(N+1),1)= -0.1;
+    args.ubx(10:10:n_states*(N+1),1)= 0.1;
+elseif max(abs(sDT_i)) == abs(b)
+    args.lbx(11:11:n_states*(N+1),1)= -0.1;
+    args.ubx(11:11:n_states*(N+1),1)= 0.1;
+elseif max(abs(sDT_i)) == abs(c)
+    args.lbx(12:12:n_states*(N+1),1)= -0.1;
+    args.ubx(12:12:n_states*(N+1),1)= 0.1;
+end
+
 % input constraints
 args.lbx(n_states*(N+1)+1:n_states*(N+1)+n_controls*N,1) = -10000;
 args.ubx(n_states*(N+1)+1:n_states*(N+1)+n_controls*N,1) = 10000;
@@ -138,7 +150,8 @@ args.ubg = args.ubg';
 
 t0 = 0;
 x0 = [eulerDCDT_i;omegaDCDT_i; sDT_i; dsDT_i];    % initial condition.
-xs = [eulerDCDT_ref;omegaDCDT_ref; sDT_ref; dsDT_ref]; % Reference posture.
+%xs = [eulerDCDT_ref;omegaDCDT_ref; sDT_ref; dsDT_ref]; % Reference posture.
+xs = zeros(12,1);
 
 % Try to preallocate xx and t with their final size, xx=zeros(...,...)
 t(1) = t0;
@@ -147,13 +160,13 @@ u0 = zeros(N,n_controls);  % two control inputs
 X0 = repmat(x0,1,N+1); % Initialization of the states
 
 % Start MPC
-mpciter = 0; xx1 = []; u_cl = [];
+mpciter = 0; xx1 = []; u_cl = []; clear xx;
 
 %% 
 % the main simulaton loop... it works as long as the error is greater
 % than xxx and the number of mpc steps is less than its maximum
 % value.
-main_loop = tic;
+main_loop = tic; 
 while(norm((x0-xs),2) > 0.005 && mpciter < 100)
     args.p   = [x0;xs]; % set the values of the parameters vector - STATES
     args.x0 = [reshape(X0',n_states*(N+1),1); reshape(u0',n_controls*N,1)]; % initial value of the optimization VARIABLES
