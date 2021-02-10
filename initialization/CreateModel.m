@@ -43,6 +43,10 @@ eulerDCDT_i = [alphaDCDT_i; betaDCDT_i; gammaDCDT_i];
 omegaDCDT_i = [0;0;0]; % Immobile chaser at t = 0
 dsDT_i = [0;0;0]; % Immobile target at t = 0
 
+% Orientation of the target docking port frame wrt LVLH (o) frame
+alphaDTo_i= 50*pi/180; betaDTo_i = 50*pi/180; gammaDTo_i= 50*pi/180;
+
+
 %% Reference variables (_ref subscript)
 % eulerDCDT_ref = [0;0;0]; % Relative euler angles between docking ports
 % omegaDCDT_ref = [0;0;0]; % No relative motion
