@@ -43,6 +43,8 @@ hold_points = [
     0,100,0,0,0,0;
     0,50,0,0,0,0;
     0,10,0,0,0,0];
+
+duree_totale_mission = (length(hold_points)-1)*Torb/4/60 % en min, doit etre inferieur a 480 min
 %%
 [ts_full_analytique,ts_full,Kf,Kc] = closing(altitude, A, B, C, Q, R, W, V, Ninterval, hold_points);
 
@@ -56,3 +58,4 @@ etat = SimOut.get('yout').get('etat');
 etat_est = SimOut.get('yout').get('etat_est');
 
 etat_final = SimOut.yout{1}.Values.Data(end,:)
+

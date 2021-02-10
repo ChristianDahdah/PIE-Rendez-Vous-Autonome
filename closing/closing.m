@@ -126,7 +126,8 @@ for i =1:length(hold_points(:,1))-1
     ts = timeseries(trajX',[0:Ninterval]*dt + ones(1,NPT) * (NPT+1) * dt * (i-1));
     ts_full_analytique = append(ts_full_analytique,ts);
 end
-
+ts = timeseries(hold_points(end,:),Ninterval*dt +(NPT+1) * dt * (length(hold_points(:,1))-2 + dt));
+ts_full_analytique = append(ts_full_analytique,ts);
 figure()
 plot(ts_full_analytique.Data(:,1),ts_full_analytique.Data(:,2))
 
