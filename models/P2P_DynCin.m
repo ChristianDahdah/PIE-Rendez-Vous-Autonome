@@ -1,4 +1,19 @@
 function [dX] = P2P_DynCin(X, U)
+    % Nonlinear, 6-dof model of the chaser-target relative coupled dynamics
+    % (assuming a fixed target in the orbital local frame). dc is the
+    % chaser docking port frame and dt the target docking port frame.
+    % X is a 13 x 1 vector whose components are as follows (BE CAREFUL OF THE FRAMES):
+    %   1:4 =  Attitude quaternion Q^{DCDT}
+    %   5:7 = rotational speed of DC with respect to DT, in DC frame
+    %   8:10 = relative position vector of DC with respect to DT, in DT
+    %   frame
+    %   11:13 = relative velocity of DC with respect to DT , in DT frame
+    %
+    %  dX is the time derivative of vector X
+    %  U is the command vector whose components are as follows : 
+    %       1:3 Torque control input torque 
+    %   
+
 
     TDC =  U(1:3);
     FDC =  U(4:6);
