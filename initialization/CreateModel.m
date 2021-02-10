@@ -1,9 +1,21 @@
 clearvars;
 close all;
 
+%% >> BEFORE EXECUTING THIS, make sure your current directory is at the root of the git. << 
+% To check that, type 'pwd' and check that the path has the following form
+% :
+
+%  '/path/to/my/git/PIE-Rendez-Vous-Autonome'
+
+%  if this is not the case, use the cd and ls (Linux)/dir (Windows) command to correct your path
+
+%%
+
+addpath('./initialization/')
+
 
 % Loading Pirat generated matrices
-load("FullMatrices");
+load("./initialization/FullMatrices");
 
 %% Chaser dimensions
 % Mass and Dimensions 
@@ -40,15 +52,17 @@ ITDT31 = ITDT(3,1); ITDT32 = ITDT(3,2); ITDT33 = ITDT(3,3);
 alphaDCDT_i = 0.2; betaDCDT_i = 0.1; gammaDCDT_i = 0; % DC -> DT initial Euler angles
 eulerDCDT_i = [alphaDCDT_i; betaDCDT_i; gammaDCDT_i];
 
+% No initial velocity and rotational speed
 omegaDCDT_i = [0;0;0]; % Immobile chaser at t = 0
 dsDT_i = [0;0;0]; % Immobile target at t = 0
 
 % Orientation of the target docking port frame wrt LVLH (o) frame
 alphaDTo_i= 50*pi/180; betaDTo_i = 50*pi/180; gammaDTo_i= 50*pi/180;
-
 eulerDTo_i = [alphaDTo_i; betaDTo_i; gammaDTo_i];
 
-sDT_i = 
+% Initial chaser position wrt target (in target docking frame)
+sxDT = 20; syDT = 0; szDT =  0; 
+sDT_i = [sxDT; syDT; szDT];
 
 %% Reference variables (_ref subscript)
 % eulerDCDT_ref = [0;0;0]; % Relative euler angles between docking ports
@@ -89,3 +103,5 @@ save('./initialization/linear_model.mat', 'A', 'B')
 save('./initialization/parameters.mat', 'mu','rT','w0','ICDC', 'mC', 'ITDT', 'eulerDTo_i', ...
     'eulerDCDT_i', 'omegaDCDT_i', ...
      'sDT_i', 'dsDT_i')
+ 
+ clearvars;

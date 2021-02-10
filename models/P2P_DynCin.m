@@ -11,7 +11,8 @@ function [dX] = P2P_DynCin(X, U)
     %
     %  dX is the time derivative of vector X
     %  U is the command vector whose components are as follows : 
-    %       1:3 Torque control input torque 
+    %       1:3 Control input torque 
+    %       4:6 Control input force
     %   
 
 
