@@ -1,5 +1,6 @@
 close all;
 % clear all;
+path(path,'../closing')
 %%
 altitude = 400;
 Rt = 6371; %km
@@ -34,7 +35,7 @@ Q = [0.01 0 0 0 0 0;
 R = eye(3)*100000;
 W = 0.01*(B*B');
 V = eye(3);
-Ninterval = 10;
+Ninterval = 20;
 hold_points = [
     0,-500,0,0,0,0;
     0,-200,0,0,0,0;
@@ -48,11 +49,16 @@ duree_totale_mission = (length(hold_points)-1)*Torb/4/60 % en min, doit etre inf
 %%
 [ts_full_analytique,ts_full,Kf,Kc] = closing(altitude, A, B, C, Q, R, W, V, Ninterval, hold_points);
 
+%% LQ intégrateur
+
+Kc_aug = lqr([[A;[eye(3) zeros(3,3)]] zeros(9,3)],[B;zeros(3,3)], 0.01*eye(9),eye(3));
+
+
 %%
 mod = 1; % two burns
 % mod = -1; % PMP
 
-SimOut = sim('../closing/obj_atteint');
+SimOut = sim('../closing/obj_atteint_precis');
 u = SimOut.get('yout').get('commande');
 etat = SimOut.get('yout').get('etat');
 etat_est = SimOut.get('yout').get('etat_est');
