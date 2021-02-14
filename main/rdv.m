@@ -8,6 +8,7 @@ mu = 3.986004418*10^5; %km^3s^-2
 Torb = 2*pi*sqrt((altitude +Rt)^3/mu);
 % Subsitution w par sa valeur
 w = 2*pi/Torb ;
+% X = [z,x,y,vz,vx,vy]
 
 A = [0 0 0 1 0 0;
      0 0 0 0 1 0;
@@ -32,10 +33,23 @@ Q = [0.01 0 0 0 0 0;
      0 0 0 0 0 0;
      0 0 0 0 0 0;
      0 0 0 0 0 0];
-R = eye(3)*100000;
+R = eye(3)*10000000;
 W = 0.01*(B*B');
 V = eye(3);
 Ninterval = 20;
+% hold_points = [
+%     0,-3500,0,0,0,0;
+%     0,-3500,0,0,0,0;
+%     0,-250,0,0,0,0;
+%     0,-250,0,0,0,0];
+hold_points = [
+    0,-3500,0,0,0,0;
+    0,-500,0,0,0,0;
+    400,0,0,0,0,0;
+    0,500,0,0,0,0;
+    0,250,0,0,0,0;
+    0,150,0,0,0,0;
+    0,50,0,0,0,0];
 % hold_points = [
 %     0,-500,0,0,0,0;
 %     0,-200,0,0,0,0;
@@ -58,10 +72,22 @@ Kc_aug = lqr([[A;[eye(3) zeros(3,3)]] zeros(9,3)],[B;zeros(3,3)], 0.01*eye(9),ey
 mod = 1; % two burns
 % mod = -1; % PMP
 
-SimOut = sim('../closing/obj_atteint_precis');
+% SimOut = sim('../closing/obj_atteint_precis');
+SimOut = sim('../closing/obj_atteint');
 u = SimOut.get('yout').get('commande');
 etat = SimOut.get('yout').get('etat');
 etat_est = SimOut.get('yout').get('etat_est');
 
 etat_final = SimOut.yout{1}.Values.Data(end,:)
+
+figure()
+plot(SimOut.tout,SimOut.yout{1}.Values.Data)
+title etat
+figure()
+plot(SimOut.tout,SimOut.yout{2}.Values.Data)
+title commande
+figure()
+plot(SimOut.tout,SimOut.yout{3}.Values.Data)
+title estimation
+
 
