@@ -1,4 +1,4 @@
-function [ts_full_analytique,ts_full,Kf,Kc] = closing(altitude, A, B, C, Q, R, W, V, Ninterval, hold_points)
+function [ts_full_analytique,ts_full,Kf,Kc,manoeuvres] = closing(altitude, A, B, C, Q, R, W, V, Ninterval, hold_points)
 % chaque jump est effectué en un quart d'orbite
 % ts_full_analytique = trajectoire en deux poussées
 % ts_full = trajectoire avec PMP
@@ -102,7 +102,7 @@ plot(ts_full.Data(:,1),ts_full.Data(:,2))
 
 % il faut faire une modif car le repère est différetn (axe y inversé)
 
-
+manoeuvres = [];
 
 ts_full_analytique = timeseries();
 
@@ -118,6 +118,7 @@ for i =1:length(hold_points(:,1))-1
     
     vx0 = w*(xf+6*(1-pi/2)*z0-x0+2*(-zf+4*z0))/(8-3*pi/2);
     vz0 = -w * (-zf+4*z0)+2*vx0;
+    manoeuvres = [manoeuvres [vz0;vx0]];
     
     for k = 1:NPT
         [x,z,vx,vz] = analytical_xz(x0,z0,vx0,vz0,0,0,w,dt*(k-1));

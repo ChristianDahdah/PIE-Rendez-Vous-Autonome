@@ -34,7 +34,7 @@ Q = [0.01 0 0 0 0 0;
      0 0 0 0 0 0;
      0 0 0 0 0 0];
 R = eye(3)*10000000;
-W = 0.01*(B*B');
+W = 0.000001*(B*B');
 V = eye(3);
 Ninterval = 20;
 % hold_points = [
@@ -61,7 +61,7 @@ hold_points = [
 
 duree_totale_mission = (length(hold_points)-1)*Torb/4/60 % en min, doit etre inferieur a 480 min
 %%
-[ts_full_analytique,ts_full,Kf,Kc] = closing(altitude, A, B, C, Q, R, W, V, Ninterval, hold_points);
+[ts_full_analytique,ts_full,Kf,Kc,manoeuvres] = closing(altitude, A, B, C, Q, R, W, V, Ninterval, hold_points);
 
 %% LQ intégrateur
 
