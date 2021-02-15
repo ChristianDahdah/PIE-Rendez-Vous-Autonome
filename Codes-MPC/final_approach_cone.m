@@ -1,10 +1,10 @@
-function [X,dX,Theta,dTheta,u_cl] = final_approach_cylinder(sDT_i,T,N,radius)
+function [X,dX,Theta,dTheta,u_cl] = final_approach_cone(sDT_i,T,N,phi)
 % This function simulates the final approach to the  coordenates (0,0,0) with velocity,
 % rotation, euler angles, etc equal to 0. 
 % sDT_i -> initial position (a,b,b), (b,a,b) or (b,b,a) with a negative and b~0
 % T -> time step
 % N -> Prediction horizon
-% radius -> approach cylinder radius
+% phi -> cone one-sided angle
 
 %This next line is to add the entire PIE-Rendez-Vous-Autonome folder and
 %its subfolders to the matlab search path
@@ -82,21 +82,15 @@ for k = 1:N
     g = [g; st_next-st_next_RK4]; %compute constraints, new
 end
     
+% If I want a cone in the direction (a,b,c) with vertex in the origin and an angle phi:
+% (ax + by + cz)/( sqrt((a²+b²+c²)*(x²+y²+z²)) ) < cos(phi)
 a = sDT_i(1); b = sDT_i(2); c = sDT_i(3);
 
-if max(abs(sDT_i)) == abs(a)
-    for k=1:N+1
-        g = [g; X(8,k)^2 + X(9,k)^2 - radius^2];
-    end
-elseif max(abs(sDT_i)) == abs(b)
-    for k=1:N+1
-        g = [g; X(7,k)^2 + X(9,k)^2 - radius^2];
-    end
-elseif max(abs(sDT_i)) == abs(c)
-    for k=1:N+1
-        g = [g; X(7,k)^2 + X(8,k)^2 - radius^2];
-    end
-end
+% Cone constraint
+for k=1:N+1
+    eq_cone =(a*X(7,k) + b*X(8,k) + c*X(9,k))/( sqrt((a^2+b^2+c^2)*(X(7,k)^2 +X(8,k)^2 + X(9,k)^2)));
+    g = [g ; eq_cone-cosd(phi)];
+end 
 
     
 % make the decision variables one column vector
@@ -117,8 +111,8 @@ args = struct;
 args.lbg(1:n_states*(N+1)) = 0;  % equality constraints
 args.ubg(1:n_states*(N+1)) = 0;   % "" 
 
-%Cylinder constraints
-args.lbg(n_states*(N+1)+1 : n_states*(N+1)+(N+1)) = -inf;
+%Cone constraints
+args.lbg(n_states*(N+1)+1 : n_states*(N+1)+(N+1)) = -999999999;
 args.ubg(n_states*(N+1)+1 : n_states*(N+1)+(N+1)) = 0;
 
 % State constraints (so that the spacecraft doesn't fuck off to space)
@@ -127,17 +121,14 @@ args.ubx(1:n_states*(N+1),1) = 10000;
 %args.ubx(7:7:n_states*(N+1),1) = 1;
 
 if max(abs(sDT_i)) == abs(a)
-    args.lbx(10:10:n_states*(N+1),1)= -0.5;
-    args.ubx(10:10:n_states*(N+1),1)= 0.5;
-    'a'
+    args.lbx(10:10:n_states*(N+1),1)= -0.1;
+    args.ubx(10:10:n_states*(N+1),1)= 0.1;
 elseif max(abs(sDT_i)) == abs(b)
-    args.lbx(11:11:n_states*(N+1),1)= -0.5;
-    args.ubx(11:11:n_states*(N+1),1)= 0.5;
-    'b'
+    args.lbx(11:11:n_states*(N+1),1)= -0.1;
+    args.ubx(11:11:n_states*(N+1),1)= 0.1;
 elseif max(abs(sDT_i)) == abs(c)
-    args.lbx(12:12:n_states*(N+1),1)= -0.5;
-    args.ubx(12:12:n_states*(N+1),1)= 0.5;
-    'c'
+    args.lbx(12:12:n_states*(N+1),1)= -0.1;
+    args.ubx(12:12:n_states*(N+1),1)= 0.1;
 end
 
 % input constraints

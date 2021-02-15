@@ -2,67 +2,27 @@
 clear all, clc
 close all;
 
-%addpath('/home/charles/casadi') % CHANGE THIS FOR YOUR PARTICULAR SITUATION
+%This next line is to add the entire PIE-Rendez-Vous-Autonome folder and
+%its subfolders to the matlab search path
+addpath(genpath('/home/gaston/Desktop/Materias supaero/COS/PIE/PIE-Rendez-Vous-Autonome'))
 
-addpath('/home/gaston/Desktop/Materias supaero/COS/PIE/MPC/CASADI')
+%addpath('./CASADI') % for Linux users
 import casadi.*
 
-%% Dynamic model import
-addpath('../models')
-load matrices.mat % Simplified model (diagonal inertia matrix)
-% load fullmatrices.mat % Full linearized dynamic model (more complex model)
+%% SIMULATION INPUT
 
-%% Initial conditions (_i subscript)
-alphaDCDT_i = 0.2; betaDCDT_i = 0; gammaDCDT_i = 0; % DC -> DT initial Euler angles
-eulerDCDT_i = [alphaDCDT_i; betaDCDT_i; gammaDCDT_i];
+%addpath('./models')
+load linear_model.mat A B % State-space representation of the coupled 6 dof system
+load parameters.mat mu rT w0 ICDC mC ITDT eulerDCDT_i omegaDCDT_i dsDT_i % Other parameters (inertia, constants) 
 
-sxDT_i = -10; syDT_i = 0; szDT_i = 0; % Initial chaser position wrt target (in target docking frame)
-sDT_i = [sxDT_i; syDT_i; szDT_i];
-
-omegaDCDT_i = [0;0;0]; % Immobile chaser at t = 0
-dsDT_i = [0;0;0]; % Immobile target at t = 0
-
-%% Reference variables (_ref subscript)
-eulerDCDT_ref = [0;0;0]; % Relative euler angles between docking ports
-omegaDCDT_ref = [0;0;0]; % No relative motion
-sDT_ref = [0;0;0]; %  
-dsDT_ref = [0;0;0];
-
-%% Working point selection 
-mu= 398600.4418e9; % en m^3/s^2
-rT= 400e3; % en m 
-w0= sqrt(mu/rT^3);
-
-mC = 12 ; % chaser mass in kg
-
-% State initial values (ce have to give them the same names as in Pirat's
-% symbolic implementation)
-sxDT = sxDT_i; syDT = syDT_i; szDT =  szDT_i; % Initial chaser position wrt target (in target docking frame)
-alphaDCDT = alphaDCDT_i; betaDCDT = betaDCDT_i; gammaDCDT = gammaDCDT_i; % DC -> DT initial Euler angles
-
-rxDCDC = .1; ryDCDC = .1; rzDCDC = .1;
-rxDTDT = .1; ryDTDT = .1; rzDTDT = .1;
-%aDT0 = 50*pi/180; bDT0 = 50*pi/180; cDT0 = 50*pi/180; % Docking port orientation
-
-
-aDT0 = 0; bDT0 = 0; cDT0 = 0; % Docking port orientation
-
-ICDC11 = 2; ICDC22 = 4; ICDC33 = 6; % en kg.m^2 (refine these values)
-ITDT11 = 2; ITDT22 = 4; ITDT33 = 6;
-
-
-A  = eval(Ar);
-B = eval(Br);
-
-
-clear sxDT syDT szDT alphaDCDT betaDCDT gammaDCDT
 %% MPC Initialization
-
 
 T = 0.5; % sampling time [s]
 N = 50; % prediction horizon 
+phi = 30;
 
-u_max = 2; u_min= -0.1; % Obsolete
+sxDT_i = -8; syDT_i = 0; szDT_i = 0;
+sDT_i = [sxDT_i; syDT_i; szDT_i];
  
 alphaDCDT = SX.sym('alphaDCDT'); betaDCDT  = SX.sym('betaDCDT'); gammaDCDT = SX.sym('gammaDCDT'); 
 eulerDCDT = [alphaDCDT;betaDCDT;gammaDCDT];
@@ -178,7 +138,7 @@ t0 = 0;
 x0 = [eulerDCDT_i;omegaDCDT_i; sDT_i; dsDT_i];    % initial condition.
 
 
-xs = [eulerDCDT_ref;omegaDCDT_ref; sDT_ref; dsDT_ref]; % Reference posture.
+xs = zeros(12,1); % Reference posture.
 
 % Try to preallocate xx and t with their final size, xx=zeros(...,...)
 t(1) = t0;
