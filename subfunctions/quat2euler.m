@@ -13,6 +13,7 @@ function [euler]=quat2euler(q)
     euler = [alpha beta gamma];
     
     
+    
 
 end
 
