@@ -3,16 +3,16 @@ clear all, clc
 close all;
 
 %addpath('D:/Documents/3A SUPAERO/PIE/Github/CasadiMatlab')
-addpath('C:/CaSaDi')
-%addpath('/home/charles/casadi')
+%addpath('C:/CaSaDi')
+addpath('./models')
 
 import casadi.*
 
 %% Dynamic model import
 %addpath('D:/Documents/3A SUPAERO/PIE/Github/models')
-addpath('../models')
-load ../initialization/linear_model.mat % State-space representation of the coupled 6 dof system
-load ../initialization/parameters.mat % Other parameters (inertia, constants) 
+addpath('./models')
+load ./initialization/linear_model.mat % State-space representation of the coupled 6 dof system
+load ./initialization/parameters.mat % Other parameters (inertia, constants) 
 
 % To change the input data, modify and run the code
 % initialization/CreateModel.m
@@ -21,8 +21,8 @@ load ../initialization/parameters.mat % Other parameters (inertia, constants)
 % alphaDCDT_i = 0.2; betaDCDT_i = 0.1; gammaDCDT_i = 0; % DC -> DT initial Euler angles
 % eulerDCDT_i = [alphaDCDT_i; betaDCDT_i; gammaDCDT_i];
 % 
-% sxDT_i = -10; syDT_i = 0; szDT_i = 0; % Initial chaser position wrt target (in target docking frame)
-% sDT_i = [sxDT_i; syDT_i; szDT_i];
+ sxDT_i = 10; syDT_i = 5; szDT_i = 0; % Initial chaser position wrt target (in target docking frame)
+ sDT_i = [sxDT_i; syDT_i; szDT_i];
 % 
 % omegaDCDT_i = [0;0;0]; % Immobile chaser at t = 0
 % dsDT_i = [0;0;0]; % Immobile target at t = 0
@@ -115,9 +115,21 @@ obj = 0; % Objective function
 st = X(:,1); % initial state
 g = [];
 g = [g;st-P(1:n_states)]; % initial condition constraints
-for k = 1:N-1
+
+vdir = [0;0;1]; % Cone main axis => TODO redefine this
+
+vdir = vdir/norm(vdir);
+
+phi = 30;
+
+for k = 1:N
     st = X(:,k); con= U(:,k);
-    obj = obj + (st-P(n_states+1:end))'*Q*(st-P(n_states+1:end)) + con'*R*con; %calculate obj
+    
+    nn = st(7:9)'*st(7:9);
+    q = st(7:9)'*vdir;
+    d =  norm(st(7:9)-q*vdir);
+    
+    obj = obj + (st-P(n_states+1:end))'*Q*(st-P(n_states+1:end)) + con'*R*con + (d/q > tand(30))*1e9; %calculate obj
     st_next = X(:,k+1);
     k1 = f(st, con);   % new 
     k2 = f(st + T/2*k1, con); % new
@@ -126,15 +138,22 @@ for k = 1:N-1
     st_next_RK4=st +T/6*(k1 +2*k2 +2*k3 +k4); % new   
     g = [g; st_next-st_next_RK4]; %compute constraints, new
 end
-    st = X(:,N); con= U(:,N);
-    obj = obj + (st-P(n_states+1:end))'*Q*(st-P(n_states+1:end)) + con'*R*con; %calculate obj
-    st_next = X(:,N+1);
-    k1 = f(st, con);   % new 
-    k2 = f(st + T/2*k1, con); % new
-    k3 = f(st + T/2*k2, con); % new
-    k4 = f(st + T*k3, con); % new
-    st_next_RK4=st +T/6*(k1 +2*k2 +2*k3 +k4); % new   
-    g = [g; st_next-st_next_RK4]; %compute constraints, new
+
+
+
+
+
+% for k=1:N
+%     nn = X(7:9,k)'*X(7:9,k);
+%     q  = X(7:9,k)'*vdir;
+%     d =  norm(X(7:9,k)-q*vdir);
+%     
+%     
+%     g = [g; d/q];
+% end
+
+
+    
     
 
 % make the decision variables one column vector
@@ -154,6 +173,12 @@ args = struct;
 % inequality constraints (state constraints)
 args.lbg(1:n_states*(N+1)) = 0;  % equality constraints
 args.ubg(1:n_states*(N+1)) = 0;   % "" 
+
+
+% inequality constraints (state constraints)
+% args.lbg(n_states*(N+1)+1:(n_states+1)*(N+1)-1) = 0;  % equality constraints
+% args.ubg(n_states*(N+1)+1:(n_states+1)*(N+1)-1) = 0.5;   % "" 
+
 
 % State constraints (so that the spacecraft doesn't fuck off to space)
 args.lbx(1:n_states*(N+1),1) = -10000;
@@ -280,7 +305,13 @@ xlabel('iteration','FontSize',15)
 ylabel('Force in N','FontSize',15)
 legend('F_x', 'F_y', 'F_z');
 
+xrange = 0:0.01:max(xx(7,:));
 
+%% 2D plot
+figure;
+plot(xx(7,:),xx(8,:), '*r'), grid on; hold on;
+plot(xrange, tand(phi)*xrange, '-b'); hold on;
+plot(xrange, -tand(phi)*xrange, '-b'); hold on;
 
 % %% 2D plot x,y
 % figure

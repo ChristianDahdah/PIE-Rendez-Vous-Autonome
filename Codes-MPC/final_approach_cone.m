@@ -9,8 +9,9 @@ function [X,dX,Theta,dTheta,u_cl] = final_approach_cone(sDT_i,T,N,phi)
 %This next line is to add the entire PIE-Rendez-Vous-Autonome folder and
 %its subfolders to the matlab search path
 addpath(genpath('/home/gaston/Desktop/Materias supaero/COS/PIE/PIE-Rendez-Vous-Autonome'))
+addpath('./initialization/')
 
-%addpath('./CASADI') % for Linux users
+addpath('./CASADI') % for Linux users
 import casadi.*
 
 %% SIMULATION INPUT
@@ -47,6 +48,8 @@ controls = [TDC;FDC]; n_controls = length(controls);
 
 %% From now on I do not care what model I use
 
+
+
 rhs= A*states + B*controls;
 
 f = Function('f',{states,controls},{rhs}); % nonlinear mapping function f(x,u)
@@ -81,16 +84,18 @@ for k = 1:N
     st_next_RK4=st +T/6*(k1 +2*k2 +2*k3 +k4); % new   
     g = [g; st_next-st_next_RK4]; %compute constraints, new
 end
+
+
     
 % If I want a cone in the direction (a,b,c) with vertex in the origin and an angle phi:
 % (ax + by + cz)/( sqrt((a²+b²+c²)*(x²+y²+z²)) ) < cos(phi)
 a = sDT_i(1); b = sDT_i(2); c = sDT_i(3);
 
 % Cone constraint
-for k=1:N+1
-    eq_cone =(a*X(7,k) + b*X(8,k) + c*X(9,k))/( sqrt((a^2+b^2+c^2)*(X(7,k)^2 +X(8,k)^2 + X(9,k)^2)));
-    g = [g ; eq_cone-cosd(phi)];
-end 
+% for k=1:N+1
+%     eq_cone =(a*X(7,k) + b*X(8,k) + c*X(9,k))/( sqrt((a^2+b^2+c^2)*(X(7,k)^2 +X(8,k)^2 + X(9,k)^2)));
+%     g = [g ; eq_cone-cosd(phi)];
+% end 
 
     
 % make the decision variables one column vector

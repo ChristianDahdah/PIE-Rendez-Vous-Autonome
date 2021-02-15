@@ -61,9 +61,7 @@ alphaDTo_i= 50*pi/180; betaDTo_i = 50*pi/180; gammaDTo_i= 50*pi/180;
 %alphaDTo_i= 0; betaDTo_i = 0; gammaDTo_i= 0;
 eulerDTo_i = [alphaDTo_i; betaDTo_i; gammaDTo_i];
 
-% Initial chaser position wrt target (in target docking frame)
-sxDT = 20; syDT = 0; szDT =  0; 
-sDT_i = [sxDT; syDT; szDT];
+
 
 %% Reference variables (_ref subscript)
 % eulerDCDT_ref = [0;0;0]; % Relative euler angles between docking ports
@@ -81,7 +79,7 @@ w0= sqrt(mu/rT^3);
 
 % Initial chaser position wrt target (in target docking frame)
 % 
-sxDT_i = -10; syDT_i = 0; szDT_i = 0; % Initial chaser position wrt target (in target docking frame)
+sxDT_i = 10; syDT_i = 20; szDT_i = 0; % Initial chaser position wrt target (in target docking frame)
 sDT_i = [sxDT_i; syDT_i; szDT_i];
 
 
