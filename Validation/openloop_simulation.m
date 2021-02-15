@@ -29,7 +29,7 @@ load('./initialization/parameters');
 
 
 dt = 0.1; % time step in seconds
-Tmax = 20; % max. simulation time in seconds
+Tmax = 600; % max. simulation time in seconds
 
 t = 0:dt:Tmax;
 
@@ -38,29 +38,97 @@ nControls = 6;
 
 QDCDT_i = euler2quat(eulerDCDT_i); 
 
-
-XX_ss = zeros(nStates,length(t)); %% States history of the LINEAR SIMULATION
+XX_ss = zeros(nStates-1,length(t)); %% States history of the LINEAR SIMULATION (one less state than the non-linear as a quaternion is not used)
 XX_nl = zeros(nStates,length(t)); %% States history of the NON-LINEAR SIMULATION
+XX_nl_nq = zeros(nStates-1,length(t)); 
 
 UU = zeros(nControls, length(t));
 
-XX(:,1) = [QDCDT_i ; omegaDCDT_i ; sDT_i ; dsDT_i ];
 
+XX_ss(:,1) = [eulerDCDT_i ; omegaDCDT_i ; sDT_i ; dsDT_i ];
+XX_nl(:,1) = [QDCDT_i ; omegaDCDT_i ; sDT_i ; dsDT_i ];
+XX_nl_nq(:,1) =  [eulerDCDT_i ; omegaDCDT_i ; sDT_i ; dsDT_i ];
 
-
-
-
-
-for i = 1:length(t)
+for i = 1:length(t)-1
+    
+    linear_fun= @(x,u)A*x+B*u;
+    
+    XX_ss(:,i+1) = RK4(linear_fun, dt, XX_ss(:,i), UU(:,i));
     
     
-    
-    
-    
+    XX_nl(:,i+1) = RK4(@P2P_DynCin, dt, XX_nl(:,i), UU(:,i));
+    XX_nl_nq(:,i+1) = RK4(@P2P_DynCin_noquaternions, dt, XX_nl_nq(:,i), UU(:,i));
     
 end
 
+% We extract the positions
+sX_ss = XX_ss(7:9,:);
+sX_nl = XX_nl(8:10,:);
+sX_nl_nq = XX_nl_nq(7:9,:);
 
+
+% We plot the positions
+figure()
+subplot(3,1,1)
+plot(t,sX_ss(1,:), 'r');
+hold on;
+plot(t,sX_nl(1,:), 'b');
+grid on;
+
+subplot(3,1,2)
+plot(t,sX_ss(2,:), 'r');
+hold on;
+plot(t,sX_nl(2,:), 'b');
+grid on;
+
+subplot(3,1,3)
+plot(t,sX_ss(3,:), 'r');
+hold on;
+plot(t,sX_nl(3,:), 'b');
+grid on;
+
+legend('lin', 'non-lin')
+
+% We extract the positions
+eulerDCDT_ss = XX_ss(1:3,:);
+eulerDCDT_nl = zeros(size(eulerDCDT_ss));
+
+for k = 1:length(XX_nl)
+    
+    eulerDCDT_nl(1:3,k)  = quat2euler(XX_nl(1:4,k));
+    
+end
+
+eulerDCDT_nl_nq =  XX_nl_nq(1:3,:);
+
+% We plot the positions
+
+figure()
+subplot(3,1,1)
+plot(t,eulerDCDT_ss(1,:), 'r');
+hold on;
+plot(t,eulerDCDT_nl(1,:), 'b');
+hold on;
+plot(t,eulerDCDT_nl_nq(1,:), 'c');
+grid on;
+
+subplot(3,1,2)
+plot(t,eulerDCDT_ss(2,:), 'r');
+hold on;
+plot(t,eulerDCDT_nl (2,:), 'b');
+hold on;
+plot(t,eulerDCDT_nl_nq (2,:), 'c');
+grid on;
+
+subplot(3,1,3)
+plot(t,eulerDCDT_ss(3,:), 'r');
+hold on;
+plot(t,eulerDCDT_nl(3,:), 'b');
+hold on;
+plot(t,eulerDCDT_nl_nq(3,:), 'c');
+grid on;
+
+legend('lin', 'non-lin, with quat', 'non-lin, no quat')
 
 
 

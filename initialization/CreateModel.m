@@ -58,6 +58,7 @@ dsDT_i = [0;0;0]; % Immobile target at t = 0
 
 % Orientation of the target docking port frame wrt LVLH (o) frame
 alphaDTo_i= 50*pi/180; betaDTo_i = 50*pi/180; gammaDTo_i= 50*pi/180;
+%alphaDTo_i= 0; betaDTo_i = 0; gammaDTo_i= 0;
 eulerDTo_i = [alphaDTo_i; betaDTo_i; gammaDTo_i];
 
 % Initial chaser position wrt target (in target docking frame)
@@ -89,18 +90,22 @@ alphaDCDT = alphaDCDT_i; betaDCDT = betaDCDT_i; gammaDCDT = gammaDCDT_i;
 
 % Position of the docking port of the chaser in the chaser's frame
 rxDCDC = .1; ryDCDC = .1; rzDCDC = .1;
+rDCDC = [rxDCDC ; ryDCDC ; rzDCDC ];
 
 % Position of the docking port of the target in the target's frame
 rxDTDT = -.1; ryDTDT = .1; rzDTDT = .1;
+rDTDT= [rxDTDT ; ryDTDT ; rzDTDT ];
 
-% Target docking port orientation
-aDT0 = 50*pi/180; bDT0 = 50*pi/180; cDT0 = 50*pi/180;
+aDT0 = alphaDTo_i; bDT0 = betaDTo_i; cDT0 = gammaDTo_i; 
+
+ 
+
 
 A  = eval(Ar);
 B = eval(Br);
 
 save('./initialization/linear_model.mat', 'A', 'B')
-save('./initialization/parameters.mat', 'mu','rT','w0','ICDC', 'mC', 'ITDT', 'eulerDTo_i', ...
+save('./initialization/parameters.mat', 'mu','rT','w0', 'rDTDT', 'rDCDC' ,'ICDC', 'mC', 'ITDT', 'eulerDTo_i', ...
     'eulerDCDT_i', 'omegaDCDT_i', ...
      'sDT_i', 'dsDT_i')
  
