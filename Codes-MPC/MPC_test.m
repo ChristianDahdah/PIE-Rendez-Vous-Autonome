@@ -1,7 +1,5 @@
 clear all, close all, clc
 
-
-
 % Physical model
 mu= 398600.4418; % en km^3/s^2
 R0= 400; % en km 

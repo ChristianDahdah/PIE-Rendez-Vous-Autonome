@@ -1,7 +1,7 @@
 function [X,dX,Theta,dTheta,u_cl] = final_approach_cylinder(sDT_i,T,N,radius)
 % This function simulates the final approach to the  coordenates (0,0,0) with velocity,
 % rotation, euler angles, etc equal to 0. 
-% sDT_i -> initial position (a,b,b), (b,a,b) or (b,b,a) with a negative and b~0
+% sDT_i -> initial position column vector [a;b;b], (b;a;b) or (b;b;a) with a negative and b~0
 % T -> time step
 % N -> Prediction horizon
 % radius -> approach cylinder radius
@@ -148,7 +148,6 @@ args.lbg = args.lbg';
 args.ubg = args.ubg';
 
 %% SIMULATION
-
 t0 = 0;
 x0 = [eulerDCDT_i;omegaDCDT_i; sDT_i; dsDT_i];    % initial condition.
 %xs = [eulerDCDT_ref;omegaDCDT_ref; sDT_ref; dsDT_ref]; % Reference posture.
