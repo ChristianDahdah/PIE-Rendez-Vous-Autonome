@@ -100,7 +100,7 @@ plot(ts_full.Data(:,1),ts_full.Data(:,2))
 
 %% methode analytique
 
-% il faut faire une modif car le repère est différetn (axe y inversé)
+% il faut faire une modif car le repère est différent (axe y inversé)
 
 manoeuvres = [];
 

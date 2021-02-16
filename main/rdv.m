@@ -43,9 +43,10 @@ Ninterval = 50;
 %     0,-250,0,0,0,0;
 %     0,-250,0,0,0,0];
 hold_points = [
-    0,-1000,0,0,0,0; % le départ à -1500 ne passe pas
+    0,-1500,0,0,0,0; % le départ à -1500 ne passe pas
+    500,-1000,0,0,0,0; % point intermédiaire : z = detax/4. Probleme car vie supossée nulle aux hold points
     0,-500,0,0,0,0;
-    400,0,0,0,0,0;
+    250,0,0,0,0,0;
     0,500,0,0,0,0;
     0,250,0,0,0,0;
     0,150,0,0,0,0;
@@ -73,7 +74,9 @@ close all;
 mod = 1; % two burns
 % mod = -1; % PMP
 tau = 10;% temps de réponse caractéristique de l'actionneur
-umax = 0.001; % seuil de saturation de la commande
+umax = 0.01; % seuil de saturation de la commande
+mesure_error = 0.1;
+acc_pert = 1e-5;
 time_integ = 17000; % time of start of integrated law
 
 % SimOut = sim('../closing/obj_atteint_precis');
