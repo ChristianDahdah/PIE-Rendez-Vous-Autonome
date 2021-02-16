@@ -1,7 +1,7 @@
 function [X,dX,Theta,dTheta,u_cl] = final_approach_cone(sDT_i,T,N,phi)
 % This function simulates the final approach to the  coordenates (0,0,0) with velocity,
 % rotation, euler angles, etc equal to 0. 
-% sDT_i -> initial position (a,b,b), (b,a,b) or (b,b,a) with a negative and b~0
+% sDT_i -> initial position column vector [a;b;b], [b;a;b]or [b;b;a] with a negative and b~0
 % T -> time step
 % N -> Prediction horizon
 % phi -> cone one-sided angle

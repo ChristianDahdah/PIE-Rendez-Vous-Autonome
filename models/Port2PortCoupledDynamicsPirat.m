@@ -68,7 +68,8 @@ wo=[0 -w0 0]';
 wIT=wDTo+ADTo*wo;
 
 %Dynamics for attitude DTO
-dwDTo=ITDT\(TDT-skew(wIT)*(ITDT*wIT));
+dwDTo = [0;0;0];
+% dwDTo=ITDT\(TDT-skew(wIT)*(ITDT*wIT));
 dwxDTo=dwDTo(1);
 dwyDTo=dwDTo(2);
 dwzDTo=dwDTo(3);

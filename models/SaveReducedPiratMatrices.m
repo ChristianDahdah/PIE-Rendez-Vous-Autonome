@@ -4,4 +4,4 @@ Ar = [Atot(1:6,1:6) Atot(13:18,1:6);
 Br = [Btot(1:6,1:3) Btot(1:6,7:9);
           Btot(13:18,1:3) Btot(13:18,7:9)]
 
-save('FullMatrices', 'Atot', 'Ar', 'Btot', 'Br')
+save('FullMatrices_With_Controlled_Target', 'Atot', 'Ar', 'Btot', 'Br')
