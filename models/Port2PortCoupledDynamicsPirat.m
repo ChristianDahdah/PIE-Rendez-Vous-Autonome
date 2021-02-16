@@ -1,4 +1,11 @@
+
+clearvars;
+
+addpath('./subfunctions')
+
 % Define variables for symbolic toolbox
+disp('Defining environment variables...')
+
 % P2P relative attitude angle variables
 syms alphaDCDT betaDCDT gammaDCDT dalphaDCDT dbetaDCDT dgammaDCDT real
 % P2P relative angular velocity variables
@@ -23,6 +30,7 @@ syms mu w0 real
 syms aDT0 bDT0 cDT0 real
 
 %Kinematics P2P
+disp('Computing kinematics...')
 AngleDC=[alphaDCDT; betaDCDT;gammaDCDT] ;
 
 cg=cos(gammaDCDT) ;
@@ -49,6 +57,8 @@ cb*sg cb*cg 0;
 -sb*cg sb*sg cb];
 
 dAngleDTo=B_angle*[wxDTo;wyDTo;wzDTo];
+
+disp('Computing dynamics...')
 
 %Relative Dynamics
 ICDC=[ ICDC11 ICDC12 ICDC13;
@@ -107,18 +117,21 @@ ddsDCDT=-skew(dwDTo)*s...
     +skew(ADCDT'*dwDC)*(rDCDT)...
     +2*skew(ADCDT'*wDCDT)*skew(ADCDT'*wDCDT)*rDCDT;
 
+
 %Compute jacobian
 ftot =[dAngleDC ;dwDC; dAngleDTo ;dwDTo;dsDCDT;ddsDCDT] ;
+disp('Computing expression of A...')
 Atot= jacobian(ftot, [AngleDC' wDCDT' AngleDTo' wDTo' sDCDT' dsDCDT']);
+disp('Computing expression of B...')
 Btot= jacobian(ftot, [TDC' TDT' FDC']);
 
 %Linearisation
-alphaDCDT=0;
-betaDCDT=0;
-gammaDCDT=0;
-wxDCDT=0;
-wyDCDT=0;
-wzDCDT=0;
+% alphaDCDT=0;
+% betaDCDT=0;
+% gammaDCDT=0;
+% wxDCDT=0;
+% wyDCDT=0;
+% wzDCDT=0;
 alphaDTo=aDT0;
 betaDTo=bDT0;
 gammaDTo=cDT0;
@@ -131,17 +144,20 @@ TzDC=0;
 TxDT=0;
 TyDT=0;
 TzDT=0;
-sxDT=0;
-syDT=0;
-szDT=0;
-dsxDT=0;
-dsyDT=0;
-dszDT=0;
+% sxDT=0;
+% syDT=0;
+% szDT=0;
+% dsxDT=0;
+% dsyDT=0;
+% dszDT=0;
 FxDC=0;
 FyDC=0;
 FzDC=0;
-
+disp('Evaluating A...')
 Atot=eval(Atot);
+disp('Evaluating B...')
 Btot=eval(Btot);
+disp('Simplifying A...')
 Atot=simplify(Atot);
+disp('Simplifying B...')
 Btot=(simplify(Btot));

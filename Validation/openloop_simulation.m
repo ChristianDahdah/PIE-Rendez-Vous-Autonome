@@ -30,8 +30,8 @@ load('./initialization/parameters');
 
 
 
-dt = 0.1; % time step in seconds
-Tmax = 600; % max. simulation time in seconds
+dt = 0.05; % time step in seconds
+Tmax = 50; % max. simulation time in seconds
 
 t = 0:dt:Tmax;
 
@@ -39,6 +39,7 @@ nStates = 13;
 nControls = 6;
 
 QDCDT_i = euler2quat(eulerDCDT_i); 
+
 
 XX_ss = zeros(nStates-1,length(t)); %% States history of the LINEAR SIMULATION (one less state than the non-linear as a quaternion is not used)
 XX_nl = zeros(nStates,length(t)); %% States history of the NON-LINEAR SIMULATION
@@ -48,9 +49,9 @@ UU = zeros(nControls, length(t));
 
 
 XX_ss(:,1) = [eulerDCDT_i ; omegaDCDT_i ; sDT_i ; dsDT_i ];
-XX_nl(:,1) = [QDCDT_i ; omegaDCDT_i ; sDT_i ; dsDT_i ];
+%XX_nl(:,1) = [QDCDT_i ; omegaDCDT_i ; sDT_i ; dsDT_i ];
 XX_nl_nq(:,1) =  [eulerDCDT_i ; omegaDCDT_i ; sDT_i ; dsDT_i ];
-
+XX_nl(:,1) =  [QDCDT_i ; omegaDCDT_i ; sDT_i ; dsDT_i ];
 for i = 1:length(t)-1
     
     linear_fun= @(x,u)A*x+B*u;
@@ -59,13 +60,15 @@ for i = 1:length(t)-1
     
     
     XX_nl(:,i+1) = RK4(@P2P_DynCin, dt, XX_nl(:,i), UU(:,i));
+    
     XX_nl_nq(:,i+1) = RK4(@P2P_DynCin_noquaternions, dt, XX_nl_nq(:,i), UU(:,i));
     
 end
 
 % We extract the positions
 sX_ss = XX_ss(7:9,:);
-sX_nl = XX_nl(8:10,:);
+%sX_nl = XX_nl(8:10,:);
+sX_nl_debug = XX_nl (8:10,:);
 sX_nl_nq = XX_nl_nq(7:9,:);
 
 
@@ -74,9 +77,10 @@ figure()
 
 subplot(3,1,1)
 
-plot(t,sX_ss(1,:), 'r');
-hold on;
-plot(t,sX_nl(1,:), 'b');
+plot(t,sX_ss(1,:), 'r'); hold on;
+plot(t,sX_nl_debug(1,:), 'b'); hold on;
+plot(t,sX_nl_nq(1,:), 'm');
+
 xlabel('Time [s]','interpreter', 'latex', 'fontsize', 13);
 ylabel('$X^{t}$ [m]' ,'interpreter', 'latex', 'fontsize', 13);
 title('Relative position vector $s^{d_cd_t}$, free motion','interpreter', 'latex', 'fontsize', 13)
@@ -86,7 +90,9 @@ grid on;
 subplot(3,1,2)
 plot(t,sX_ss(2,:), 'r');
 hold on;
-plot(t,sX_nl(2,:), 'b');
+plot(t,sX_nl_debug(2,:), 'b');
+hold on;
+plot(t,sX_nl_nq(2,:), 'm');
 grid on;
 xlabel('Time [s]','interpreter', 'latex', 'fontsize', 13);
 ylabel('$Y^{t}$ [m]' ,'interpreter', 'latex', 'fontsize', 13);
@@ -95,7 +101,9 @@ ylabel('$Y^{t}$ [m]' ,'interpreter', 'latex', 'fontsize', 13);
 subplot(3,1,3)
 plot(t,sX_ss(3,:), 'r');
 hold on;
-plot(t,sX_nl(3,:), 'b');
+plot(t,sX_nl_debug(3,:), 'b');
+hold on;
+plot(t,sX_nl_nq(3,:), 'm');
 grid on;
 xlabel('Time [s]','interpreter', 'latex', 'fontsize', 13);
 ylabel('$Z^{t}$ [m]' ,'interpreter', 'latex', 'fontsize', 13);
@@ -105,13 +113,15 @@ legend('linear model', 'non-linear model')
 
 % We extract the positions
 eulerDCDT_ss = XX_ss(1:3,:);
-eulerDCDT_nl = zeros(size(eulerDCDT_ss));
+eulerDCDT_nl_debug = zeros(size(eulerDCDT_ss));
 
 for k = 1:length(XX_nl)
     
-    eulerDCDT_nl(1:3,k)  = quat2euler(XX_nl(1:4,k));
+    eulerDCDT_nl_debug(1:3,k)  = quat2euler(XX_nl(1:4,k));
     
 end
+
+%eulerDCDT_nl_debug =  XX_nl(1:3,:);
 
 eulerDCDT_nl_nq =  XX_nl_nq(1:3,:);
 
@@ -122,7 +132,9 @@ subplot(3,1,1)
 
 plot(t,eulerDCDT_ss(1,:), 'r');
 hold on;
-plot(t,eulerDCDT_nl(1,:), 'b');
+plot(t,eulerDCDT_nl_debug(1,:), 'b');
+hold on;
+plot(t,eulerDCDT_nl_nq(1,:), 'm');
 title('Relative Euler angles (XYZ seq.), free motion','interpreter', 'latex', 'fontsize', 13)
 xlabel('Time [s]','interpreter', 'latex', 'fontsize', 13);
 ylabel('X angle [rad]' ,'interpreter', 'latex', 'fontsize', 13);
@@ -131,7 +143,9 @@ grid on;
 subplot(3,1,2)
 plot(t,eulerDCDT_ss(2,:), 'r');
 hold on;
-plot(t,eulerDCDT_nl (2,:), 'b');
+plot(t,eulerDCDT_nl_debug(2,:), 'b');
+hold on;
+plot(t,eulerDCDT_nl_nq(2,:), 'm');
 hold on;
 xlabel('Time [s]','interpreter', 'latex', 'fontsize', 13);
 ylabel('Y angle [rad]' ,'interpreter', 'latex', 'fontsize', 13);
@@ -140,13 +154,15 @@ grid on;
 subplot(3,1,3)
 plot(t,eulerDCDT_ss(3,:), 'r');
 hold on;
-plot(t,eulerDCDT_nl(3,:), 'b');
+plot(t,eulerDCDT_nl_debug(3,:), 'b');
+hold on;
+plot(t,eulerDCDT_nl_nq(3,:), 'm');
 hold on;
 xlabel('Time [s]','interpreter', 'latex', 'fontsize', 13);
 ylabel('Z angle [rad]' ,'interpreter', 'latex', 'fontsize', 13);
 grid on;
 
-legend('linear model', 'non-linear model')
+legend('linear model', 'non-linear model, quat', 'non-linear model, euler')
 
 
 

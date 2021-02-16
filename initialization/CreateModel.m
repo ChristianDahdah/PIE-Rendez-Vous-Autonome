@@ -15,7 +15,7 @@ addpath('./initialization/')
 
 
 % Loading Pirat generated matrices
-load("./initialization/FullMatrices");
+load("./initialization/FullMatrices_With_Controlled_Target.mat");
 
 %% Chaser dimensions
 % Mass and Dimensions 
@@ -57,7 +57,7 @@ omegaDCDT_i = [0;0;0]; % Immobile chaser at t = 0
 dsDT_i = [0;0;0]; % Immobile target at t = 0
 
 % Orientation of the target docking port frame wrt LVLH (o) frame
-alphaDTo_i= 50*pi/180; betaDTo_i = 50*pi/180; gammaDTo_i= 50*pi/180;
+alphaDTo_i= 50*pi/180; betaDTo_i = 50*pi/180; gammaDTo_i= 0*pi/180;
 %alphaDTo_i= 0; betaDTo_i = 0; gammaDTo_i= 0;
 eulerDTo_i = [alphaDTo_i; betaDTo_i; gammaDTo_i];
 
