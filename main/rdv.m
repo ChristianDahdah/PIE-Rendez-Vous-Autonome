@@ -79,8 +79,8 @@ mesure_error = 0.1;
 acc_pert = 1e-5;
 time_integ = 17000; % time of start of integrated law
 
-% SimOut = sim('../closing/obj_atteint_precis');
-SimOut = sim('../closing/obj_atteint');
+% SimOut = sim('../closing/obj_atteint_precis_2020a');
+SimOut = sim('../closing/obj_atteint_2020a');
 u = SimOut.get('yout').get('commande');
 etat = SimOut.get('yout').get('etat');
 etat_est = SimOut.get('yout').get('etat_est');
