@@ -33,10 +33,10 @@ Q = [0.01 0 0 0 0 0;
      0 0 0 0 0 0;
      0 0 0 0 0 0;
      0 0 0 0 0 0];
-R = eye(3)*100000;
-W = 0.01*(B*B');
+R = eye(3)*10000000;
+W = 0.000001*(B*B');
 V = eye(3);
-Ninterval = 20;
+Ninterval = 50;
 % hold_points = [
 %     0,-3500,0,0,0,0;
 %     0,-3500,0,0,0,0;
@@ -61,7 +61,7 @@ hold_points = [
 
 duree_totale_mission = (length(hold_points)-1)*Torb/4/60 % en min, doit etre inferieur a 480 min
 %%
-[ts_full_analytique,ts_full,Kf,Kc] = closing(altitude, A, B, C, Q, R, W, V, Ninterval, hold_points);
+[ts_full_analytique,ts_full,Kf,Kc,manoeuvres] = closing(altitude, A, B, C, Q, R, W, V, Ninterval, hold_points);
 
 %% LQ intégrateur
 
@@ -71,8 +71,10 @@ Kc_aug = lqr([[A;[eye(3) zeros(3,3)]] zeros(9,3)],[B;zeros(3,3)], 0.01*eye(9),ey
 %%
 mod = 1; % two burns
 % mod = -1; % PMP
+tau = 1;% temps de réponse caractéristique de l'actionneur
+umax = 0.5; % seuil de saturation de la commande
 
-% SimOut = sim('../closing/obj_atteint_precis');
+SimOut = sim('../closing/obj_atteint_precis');
 SimOut = sim('../closing/obj_atteint');
 u = SimOut.get('yout').get('commande');
 etat = SimOut.get('yout').get('etat');
@@ -81,10 +83,26 @@ etat_est = SimOut.get('yout').get('etat_est');
 etat_final = SimOut.yout{1}.Values.Data(end,:)
 
 figure()
-plot(SimOut.yout{1}.Values.Data,SimOut.tout)
+plot(SimOut.tout,SimOut.yout{1}.Values.Data)
+hold on
+plot(SimOut.tout,SimOut.yout{5}.Values.Data)
+title etat
+ylabel m
+xlabel s
 figure()
-plot(SimOut.yout{2}.Values.Data,SimOut.tout)
+plot(SimOut.tout,SimOut.yout{2}.Values.Data)
+title commande
+ylabel('m/s²')
+xlabel s
 figure()
-plot(SimOut.yout{2}.Values.Data,SimOut.tout)
+plot(SimOut.tout,SimOut.yout{3}.Values.Data)
+title estimation
+ylabel m
+xlabel s
+figure()
+plot(SimOut.tout,SimOut.yout{4}.Values.Data)
+title('commande avant corrections')
+ylabel('m/s²')
+xlabel s
 
 

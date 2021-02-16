@@ -43,7 +43,7 @@ Ninterval = 50;
 %     0,-250,0,0,0,0;
 %     0,-250,0,0,0,0];
 hold_points = [
-    0,-3500,0,0,0,0;
+    0,-1000,0,0,0,0; % le départ à -1500 ne passe pas
     0,-500,0,0,0,0;
     400,0,0,0,0,0;
     0,500,0,0,0,0;
@@ -69,8 +69,12 @@ Kc_aug = lqr([[A;[eye(3) zeros(3,3)]] zeros(9,3)],[B;zeros(3,3)], 0.01*eye(9),ey
 
 
 %%
+close all;
 mod = 1; % two burns
 % mod = -1; % PMP
+tau = 10;% temps de réponse caractéristique de l'actionneur
+umax = 0.001; % seuil de saturation de la commande
+time_integ = 17000; % time of start of integrated law
 
 % SimOut = sim('../closing/obj_atteint_precis');
 SimOut = sim('../closing/obj_atteint');
@@ -82,6 +86,8 @@ etat_final = SimOut.yout{1}.Values.Data(end,:)
 
 figure()
 plot(SimOut.tout,SimOut.yout{1}.Values.Data)
+hold on
+plot(SimOut.tout,SimOut.yout{5}.Values.Data)
 title etat
 ylabel m
 xlabel s
