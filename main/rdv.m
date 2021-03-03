@@ -1,5 +1,5 @@
 close all;
-% clear all;
+clear all;
 path(path,'../closing')
 %%
 altitude = 400;
@@ -27,14 +27,14 @@ C = [1 0 0 0 0 0;
      0 0 1 0 0 0];
 D=zeros(3);
 %%
-Q = [0.01 0 0 0 0 0;
-     0 0.01 0 0 0 0;
-     0 0 0.01 0 0 0;
+Q = [1 0 0 0 0 0;
+     0 1 0 0 0 0;
+     0 0 1 0 0 0;
      0 0 0 0 0 0;
      0 0 0 0 0 0;
      0 0 0 0 0 0];
-R = eye(3)*100000000;
-W = 0.000001*(B*B');
+R = eye(3)*1e10;
+W = 1e-6*(B*B');
 V = eye(3);
 Ninterval = 50;
 % hold_points = [
@@ -44,13 +44,16 @@ Ninterval = 50;
 %     0,-250,0,0,0,0];
 hold_points = [
     0,-1500,0,0,0,0; % le départ à -1500 ne passe pas
-    500,-1000,0,0,0,0; % point intermédiaire : z = detax/4. Probleme car vie supossée nulle aux hold points
+    250,-1000,0,0,0,0; % point intermédiaire : z = detax/4. Probleme car vie supossée nulle aux hold points
     0,-500,0,0,0,0;
     250,0,0,0,0,0;
     0,500,0,0,0,0;
+    -62.5,375,0,0,0,0;
     0,250,0,0,0,0;
-    0,150,0,0,0,0;
-    0,100,0,0,0,0
+    -50,150,0,0,0,0;
+    0,50,0,0,0,0;
+    -10,30,0,0,0,0;
+    0,10,0,0,0,0
     ];
 % hold_points = [
 %     0,-500,0,0,0,0;
@@ -67,19 +70,18 @@ duree_totale_mission = (length(hold_points)-1)*Torb/4/60 % en min, doit etre inf
 
 %% LQ intégrateur
 
-Kc_aug = lqr([[A;[eye(3) zeros(3,3)]] zeros(9,3)],[B;zeros(3,3)], [[Q zeros(6,3)];[zeros(3,6) .01*eye(3)]],10000000*eye(3));
+Kc_aug = lqr([[A;[eye(3) zeros(3,3)]] zeros(9,3)],[B;zeros(3,3)], [[Q zeros(6,3)];[zeros(3,6) 1e-4*eye(3)]],1e10*eye(3));
 
 
 %%
 close all;
 mod = 1; % two burns
 % mod = -1; % PMP
-tau = 10;% temps de réponse caractéristique de l'actionneur
+tau = 100;% temps de réponse caractéristique de l'actionneur
 umax = 0.001; % seuil de saturation de la commande
-mesure_error = 0.1;
-acc_pert = 1e-5;
-time_integ = 10000; % time of start of integrated law
-integ_lim = 0.000001;
+mesure_error = .1;
+acc_pert = 1e-4;
+time_integ = (length(hold_points) + 1)*Torb/4; % time of start of integrated law
 %%
 % SimOut = sim('../closing/obj_atteint_precis_2020a');
 SimOut = sim('../closing/obj_atteint_precis_2020a');
@@ -111,5 +113,4 @@ plot(SimOut.tout,SimOut.yout{4}.Values.Data)
 title('commande avant corrections')
 ylabel('m/s²')
 xlabel s
-
 
