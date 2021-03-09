@@ -36,8 +36,8 @@ Kf=Kf';
 
 %% Trajectoire Optimale
 syms t T real
-Ea_t = eye(6)+A*t+(A*t)^2/2+(A*t)^3/6;%expm(A*t);
-Ema_t = eye(6)-A*t+(A*t)^2/2-(A*t)^3/6;% expm(-A*t);
+Ea_t = exp(A*t);%eye(6)+A*t+(A*t)^2/2+(A*t)^3/6+(A*t)^4/24+(A*t)^5/96+(A*t)^6/factorial(6)+(A*t)^7/factorial(7)+(A*t)^8/factorial(8)+(A*t)^9/factorial(9)+(A*t)^10/factorial(10);%expm(A*t);
+Ema_t = exp(-A*t);%eye(6)-A*t+(A*t)^2/2-(A*t)^3/6+(A*t)^4/24-(A*t)^5/96+(A*t)^6/factorial(6)-(A*t)^7/factorial(7)+(A*t)^8/factorial(8)-(A*t)^9/factorial(9)+(A*t)^10/factorial(10);% expm(-A*t);
 D_t = Ema_t*B;
 C_T = int(D_t*D_t',t,0,T);
 C_t = subs(C_T,T,t);
@@ -95,8 +95,8 @@ for i =1:length(hold_points(:,1))-1
     ts = timeseries(trajX',[0:Ninterval]*dt + ones(1,NPT) * (NPT+1) * dt * (i-1));
     ts_full = append(ts_full,ts);
 end
-% figure()
-% plot(ts_full.Data(:,1),ts_full.Data(:,2))
+figure()
+plot(ts_full.Data(:,1),ts_full.Data(:,2))
 
 %% methode analytique
 
