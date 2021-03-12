@@ -3,7 +3,6 @@
 %% initialisation
 
 close all;
-clear all;
 path(path,'../closing')
 %%
 altitude = 400;
@@ -47,6 +46,7 @@ hold_points = [
 %% test 1: convergence Kc
 
 mode = 1; % two burns
+% mode = -1; % PMP
 tau = 10;% temps de réponse caractéristique de l'actionneur
 umax = 0.001; % seuil de saturation de la commande
 mesure_error = 0;
@@ -54,7 +54,6 @@ acc_pert = 0;
 time_integ = 20000; % time of start of integrated law
 
 res2 = [];
-Kc_aug = [0 0 0 0 0 0 0 0 0];
 W = 1e-6*(B*B');
 V = eye(3);
 Ninterval = 50;
@@ -69,7 +68,7 @@ for k=1:20
     k
     R = eye(3)*10^k;
     
-    [traj_analytique,traj_PMP,Kf,Kc,manoeuvres] = closing(altitude, A, B, C, Q, R, W, V, Ninterval, hold_points);
+    [traj_analytique,traj_PMP,Kf,Kc,KC_aug,manoeuvres] = closing(altitude, A, B, C, Q, R,0, W, V, Ninterval, hold_points);
     SimOut = sim('../closing/boucle_LQG_finale');
     etat_final = SimOut.yout{1}.Values.Data(end,:);
     res2 = [res2 etat_final'];
@@ -89,6 +88,7 @@ ylabel x
 %% test 3: resistance perturbation mesure
 
 mode = 1; % two burns
+% mode = -1; % PMP
 tau = 10;% temps de réponse caractéristique de l'actionneur
 umax = 0.001; % seuil de saturation de la commande
 mesure_error = 0;
@@ -96,7 +96,6 @@ acc_pert = 0;
 time_integ = 20000; % time of start of integrated law
 
 res3 = [];
-Kc_aug = [0 0 0 0 0 0 0 0 0];
 
 Q = [1 0 0 0 0 0;
     0 1 0 0 0 0;
@@ -112,7 +111,7 @@ Ninterval = 50;
 for k=-8:-1
     k
     W = 10^k*(B*B');
-    [traj_analytique,traj_PMP,Kf,Kc,manoeuvres] = closing(altitude, A, B, C, Q, R, W, V, Ninterval, hold_points);
+    [traj_analytique,traj_PMP,Kf,Kc,Kc_aug,manoeuvres] = closing(altitude, A, B, C, Q, R,0, W, V, Ninterval, hold_points);
     for i=1:6
         i
         mesure_error = 0.05*i;
@@ -155,13 +154,13 @@ ylabel x
 %% test 4: perfo
 
 mode = 1; % two burns
+% mode = -1; % PMP
 tau = 10;% temps de réponse caractéristique de l'actionneur
 umax = 0.001; % seuil de saturation de la commande
 mesure_error = 0.3;
 acc_pert = 1e-4;
 time_integ = 20000; % time of start of integrated law
 
-res2 = [];
 W = 1e-6*(B*B');
 V = eye(3);
 Ninterval = 50;
@@ -174,11 +173,10 @@ Q = [1 0 0 0 0 0;
     0 0 0 0 0 0];
 R = eye(3)*1e10;
 res4 = [];
-[traj_analytique,traj_PMP,Kf,Kc,manoeuvres] = closing(altitude, A, B, C, Q, R, W, V, Ninterval, hold_points);
 time_integ = 16000; % time of start of integrated law
 
 for k=0:6
-    Kc_aug = lqr([[A;[eye(3) zeros(3,3)]] zeros(9,3)],[B;zeros(3,3)], [[Q zeros(6,3)];[zeros(3,6) 10^(-k)*eye(3)]],1e10*eye(3));
+    [traj_analytique,traj_PMP,Kf,Kc,Kc_aug,manoeuvres] = closing(altitude, A, B, C, Q, R, 10^(-k), W, V, Ninterval, hold_points);
     
     k
     SimOut = sim('../closing/boucle_LQG_finale');
@@ -201,10 +199,10 @@ ylabel x
 %% récupération de graphiques de perfomance en perturbation
 
 mode = 1; % two burns
+% mode = -1; % PMP
 tau = 10;% temps de réponse caractéristique de l'actionneur
 umax = 0.001; % seuil de saturation de la commande
 mesure_error = 0;
-res2 = [];
 W = 1e-6*(B*B');
 V = eye(3);
 Ninterval = 50;
@@ -216,10 +214,8 @@ Q = [1 0 0 0 0 0;
     0 0 0 0 0 0];
 R = eye(3)*1e10;
 res4 = [];
-[traj_analytique,traj_PMP,Kf,Kc,manoeuvres] = closing(altitude, A, B, C, Q, R, W, V, Ninterval, hold_points);
+[traj_analytique,traj_PMP,Kf,Kc,manoeuvres] = closing(altitude, A, B, C, Q, R, 10^(-4), W, V, Ninterval, hold_points);
 time_integ = (length(hold_points) + 1)*Torb/4; % time of start of integrated law
-Kc_aug = lqr([[A;[eye(3) zeros(3,3)]] zeros(9,3)],[B;zeros(3,3)], [[Q zeros(6,3)];[zeros(3,6) 10^(-4)*eye(3)]],1e10*eye(3));
-
 for k=0:10
     k
     acc_pert = k*5e-4;
@@ -233,10 +229,10 @@ ylabel x
 %% récupération de graphiques de perfomance en mesure
 
 mode = 1; % two burns
+% mode = -1; % PMP
 tau = 10;% temps de réponse caractéristique de l'actionneur
 umax = 0.001; % seuil de saturation de la commande
 acc_pert = 0;
-res2 = [];
 W = 1e-6*(B*B');
 V = eye(3);
 Ninterval = 50;
@@ -248,10 +244,8 @@ Q = [1 0 0 0 0 0;
     0 0 0 0 0 0];
 R = eye(3)*1e10;
 res4 = [];
-[traj_analytique,traj_PMP,Kf,Kc,manoeuvres] = closing(altitude, A, B, C, Q, R, W, V, Ninterval, hold_points);
+[traj_analytique,traj_PMP,Kf,Kc,Kc_aug,manoeuvres] = closing(altitude, A, B, C, Q, R, 10^(-4), W, V, Ninterval, hold_points);
 time_integ = (length(hold_points) + 1)*Torb/4; % time of start of integrated law
-Kc_aug = lqr([[A;[eye(3) zeros(3,3)]] zeros(9,3)],[B;zeros(3,3)], [[Q zeros(6,3)];[zeros(3,6) 10^(-4)*eye(3)]],1e10*eye(3));
-
 for k=0:10
     k
     mesure_error = k*0.1;
@@ -265,10 +259,10 @@ ylabel x
 %% récupération de graphiques de perfomance combinées
 
 mode = 1; % two burns
+% mode = -1; % PMP
 tau = 10;% temps de réponse caractéristique de l'actionneur
 umax = 0.001; % seuil de saturation de la commande
 acc_pert = 0;
-res2 = [];
 W = 1e-6*(B*B');
 V = eye(3);
 Ninterval = 50;
@@ -280,9 +274,8 @@ Q = [1 0 0 0 0 0;
     0 0 0 0 0 0];
 R = eye(3)*1e10;
 res4 = [];
-[traj_analytique,traj_PMP,Kf,Kc,manoeuvres] = closing(altitude, A, B, C, Q, R, W, V, Ninterval, hold_points);
-time_integ = (length(hold_points) + 1)*Torb/4; % time of start of integrated law
-Kc_aug = lqr([[A;[eye(3) zeros(3,3)]] zeros(9,3)],[B;zeros(3,3)], [[Q zeros(6,3)];[zeros(3,6) 10^(-4)*eye(3)]],1e10*eye(3));
+[traj_analytique,traj_PMP,Kf,Kc,Kc_aug,manoeuvres] = closing(altitude, A, B, C, Q, R, 10^(-4, W, V, Ninterval, hold_points);
+time_integ = (length(hold_points) + 1)*Torb/4; % time of start of integrated lawos(3,6) 10^(-4)*eye(3)]],1e10*eye(3));
 
 legends = [];
 for k=0:10
