@@ -24,14 +24,15 @@ addpath('./initialization');
 % with perfect docking)
 load('./initialization/linear_model');
 
+
 % Constants and Chaser, target parameters (change the
 % initialization/CreateModel.m routine to change them):
 load('./initialization/parameters');
 
 
 
-dt = 0.05; % time step in seconds
-Tmax = 50; % max. simulation time in seconds
+dt = 0.5; % time step in seconds
+Tmax = 60; % max. simulation time in seconds
 
 t = 0:dt:Tmax;
 
@@ -78,8 +79,9 @@ figure()
 subplot(3,1,1)
 
 plot(t,sX_ss(1,:), 'r'); hold on;
-plot(t,sX_nl_debug(1,:), 'b'); hold on;
-plot(t,sX_nl_nq(1,:), 'm');
+plot(t,sX_nl_debug(1,:), 'b');
+% hold on;
+% plot(t,sX_nl_nq(1,:), 'm');
 
 xlabel('Time [s]','interpreter', 'latex', 'fontsize', 13);
 ylabel('$X^{t}$ [m]' ,'interpreter', 'latex', 'fontsize', 13);
@@ -91,8 +93,8 @@ subplot(3,1,2)
 plot(t,sX_ss(2,:), 'r');
 hold on;
 plot(t,sX_nl_debug(2,:), 'b');
-hold on;
-plot(t,sX_nl_nq(2,:), 'm');
+% hold on;
+% plot(t,sX_nl_nq(2,:), 'm');
 grid on;
 xlabel('Time [s]','interpreter', 'latex', 'fontsize', 13);
 ylabel('$Y^{t}$ [m]' ,'interpreter', 'latex', 'fontsize', 13);
@@ -102,8 +104,8 @@ subplot(3,1,3)
 plot(t,sX_ss(3,:), 'r');
 hold on;
 plot(t,sX_nl_debug(3,:), 'b');
-hold on;
-plot(t,sX_nl_nq(3,:), 'm');
+% hold on;
+% plot(t,sX_nl_nq(3,:), 'm');
 grid on;
 xlabel('Time [s]','interpreter', 'latex', 'fontsize', 13);
 ylabel('$Z^{t}$ [m]' ,'interpreter', 'latex', 'fontsize', 13);
@@ -133,8 +135,8 @@ subplot(3,1,1)
 plot(t,eulerDCDT_ss(1,:), 'r');
 hold on;
 plot(t,eulerDCDT_nl_debug(1,:), 'b');
-hold on;
-plot(t,eulerDCDT_nl_nq(1,:), 'm');
+% hold on;
+% plot(t,eulerDCDT_nl_nq(1,:), 'm');
 title('Relative Euler angles (XYZ seq.), free motion','interpreter', 'latex', 'fontsize', 13)
 xlabel('Time [s]','interpreter', 'latex', 'fontsize', 13);
 ylabel('X angle [rad]' ,'interpreter', 'latex', 'fontsize', 13);
@@ -144,8 +146,8 @@ subplot(3,1,2)
 plot(t,eulerDCDT_ss(2,:), 'r');
 hold on;
 plot(t,eulerDCDT_nl_debug(2,:), 'b');
-hold on;
-plot(t,eulerDCDT_nl_nq(2,:), 'm');
+% hold on;
+% plot(t,eulerDCDT_nl_nq(2,:), 'm');
 hold on;
 xlabel('Time [s]','interpreter', 'latex', 'fontsize', 13);
 ylabel('Y angle [rad]' ,'interpreter', 'latex', 'fontsize', 13);
@@ -156,13 +158,13 @@ plot(t,eulerDCDT_ss(3,:), 'r');
 hold on;
 plot(t,eulerDCDT_nl_debug(3,:), 'b');
 hold on;
-plot(t,eulerDCDT_nl_nq(3,:), 'm');
-hold on;
+% plot(t,eulerDCDT_nl_nq(3,:), 'm');
+% hold on;
 xlabel('Time [s]','interpreter', 'latex', 'fontsize', 13);
 ylabel('Z angle [rad]' ,'interpreter', 'latex', 'fontsize', 13);
 grid on;
 
-legend('linear model', 'non-linear model, quat', 'non-linear model, euler')
+legend('linear model (Euler-based)', 'non-linear model (quaternion-based)');
 
 
 

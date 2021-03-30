@@ -54,6 +54,9 @@ function [dX] = P2P_DynCin_noquaternions(X, U)
 
  load parameters.mat
 
+ 
+ params = load('parameters.mat');
+ 
 %Kinematics P2P
  
 alphaDCDT = eulerDCDT(1);
@@ -117,7 +120,7 @@ rzCDT=rDCDT(3);
 
 rcDT=ADTo*rTo+sDCDT-rDCDT+rDTDT;
 
-accDT=mu*ADTo*rTo/norm(ADTo*rTo)^3-mu*(rcDT)/norm(rcDT)^3+ADCDT'*FDC/mC;
+accDT=params.mu*ADTo*rTo/norm(ADTo*rTo)^3-params.mu*(rcDT)/norm(rcDT)^3+ADCDT'*FDC/mC;
 s=sDCDT-rDCDT+rDTDT;
 ddsDCDT=-skew(dwDTo)*s...
     - skew(wDTo)*skew(wDTo)*s...
