@@ -1,5 +1,4 @@
 close all;
-clear all;
 path(path,'../closing')
 %%
 altitude = 400;
@@ -34,17 +33,17 @@ Q = [1 0 0 0 0 0;
      0 0 0 0 0 0;
      0 0 0 0 0 0];
 R = eye(3)*1e10;
+gain_integ = 10^(-4);
 W = 1e-6*(B*B');
 V = eye(3);
 Ninterval = 50;
-% hold_points = [
-%     0,-3500,0,0,0,0;
-%     0,-3500,0,0,0,0;
-%     0,-250,0,0,0,0;
-%     0,-250,0,0,0,0];
+
+% les hold_points sont atteints tous les quarts d'orbite. Il faut ainsi en
+% utiliser deux pour définir un saut : un au sommet et un à l'arrivée.
+
 hold_points = [
-    0,-1500,0,0,0,0; % le départ à -1500 ne passe pas
-    250,-1000,0,0,0,0; % point intermédiaire : z = detax/4. Probleme car vie supossée nulle aux hold points
+    0,-1500,0,0,0,0; 
+    250,-1000,0,0,0,0; % point intermédiaire : z = detax/4., x = x0 + deltax/2
     0,-500,0,0,0,0;
     250,0,0,0,0,0;
     0,500,0,0,0,0;
@@ -55,23 +54,9 @@ hold_points = [
     -10,30,0,0,0,0;
     0,10,0,0,0,0
     ];
-% hold_points = [
-%     0,-500,0,0,0,0;
-%     0,-200,0,0,0,0;
-%     0,-100,0,0,0,0;
-%     100,0,0,0,0,0;
-%     0,100,0,0,0,0;
-%     0,50,0,0,0,0;
-%     0,10,0,0,0,0];
-
-duree_totale_mission = (length(hold_points)-1)*Torb/4/60 % en min, doit etre inferieur a 480 min
+duree_totale_mission = (length(hold_points)-1)*Torb/4/60 % en min, doit etre inferieur a 480 min pour être acceptable par les standards (vol habité etc)
 %%
-[ts_full_analytique,ts_full,Kf,Kc,manoeuvres] = closing(altitude, A, B, C, Q, R, W, V, Ninterval, hold_points);
-
-%% LQ intégrateur
-
-Kc_aug = lqr([[A;[eye(3) zeros(3,3)]] zeros(9,3)],[B;zeros(3,3)], [[Q zeros(6,3)];[zeros(3,6) 1e-4*eye(3)]],1e10*eye(3));
-
+[ts_full_analytique,ts_full,Kf,Kc,Kc_aug,manoeuvres] = closing(altitude, A, B, C, Q, R, gain_integ, W, V, Ninterval, hold_points);
 
 %%
 close all;
@@ -83,8 +68,7 @@ mesure_error = .1;
 acc_pert = 1e-4;
 time_integ = (length(hold_points) + 1)*Torb/4; % time of start of integrated law
 %%
-% SimOut = sim('../closing/obj_atteint_precis_2020a');
-SimOut = sim('../closing/obj_atteint_precis_2020a');
+SimOut = sim('../closing/boucle_LQG_finale');
 u = SimOut.get('yout').get('commande');
 etat = SimOut.get('yout').get('etat');
 etat_est = SimOut.get('yout').get('etat_est');
