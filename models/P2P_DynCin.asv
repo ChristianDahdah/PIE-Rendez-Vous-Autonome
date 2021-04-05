@@ -74,7 +74,7 @@ rzCDT=rDCDT(3);
 
 rcDT=ChgtRep(QDTo,rTo)+sDCDT-rDCDT+rDTDT;
 
-accDT=paramMu.mu*ChgtRep(QDTo,rTo)/norm(ChgtRep(QDTo,rTo))^3-paramMu.mu*(rcDT)/norm(rcDT)^3+ChgtRep(invQuat(QDCDT),FDC/mC);
+accDT=paramMu.mu*ChgtRep(QDTo,rTo)/norm(ChgtRep(QDTo,rTo))^3-paramMumu*(rcDT)/norm(rcDT)^3+ChgtRep(invQuat(QDCDT),FDC/mC);
 s=sDCDT-rDCDT+rDTDT;
 ddsDCDT=-skew(dwDTo)*s...
     - skew(wDTo)*skew(wDTo)*s...
