@@ -13,8 +13,10 @@ global T N Q R radius
 model = load('../initialization/linear_model.mat');
 param = load('../initialization/parameters.mat');
 
-% Path to import CasADi
-addpath('./casadi_windows');
+% Path to import CasADi (uncomment the appropriate line)
+addpath('../casadi-windows'); % for windows OS
+% addpath('../CASADI'); % from Linux OS
+
 import casadi.*
 
 %% MPC Initialization

@@ -1,4 +1,4 @@
-function [dX] = P2P_DynCin_debug(X, U)
+function [dX] = P2P_DynCin(X, U)
     % Nonlinear, 6-dof model of the chaser-target relative coupled dynamics
     % (assuming a fixed target in the orbital local frame). dc is the
     % chaser docking port frame and dt the target docking port frame.
